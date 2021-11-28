@@ -31,6 +31,7 @@ public class Passenger {
         this.finalFloor = finalFloor;
     }
 
+
     public synchronized boolean grantPassengerAccess(Elevator currElevator) {
         return currElevator.getActiveUsersCount() + 1 <= Elevator.MAX_USERS_COUNT && currElevator.getCurrentWeight() + getPassengerWeight() <= Elevator.MAX_ACCEPTABLE_WEIGHT;
     }
