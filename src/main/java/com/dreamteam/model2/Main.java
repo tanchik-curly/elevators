@@ -117,12 +117,12 @@ public class Main {
             floorList.add(new Floor(i, observer));
         }
 
-        floorList.get(0).setPreviousFloor(null);
+        floorList.get(0).setPrevious(null);
         for (int i = 0, j = 1; j < floorCount; ++i, ++j) {
-            floorList.get(j).setPreviousFloor(floorList.get(i));
-            floorList.get(i).setNextFloor(floorList.get(j));
+            floorList.get(j).setPrevious(floorList.get(i));
+            floorList.get(i).setNext(floorList.get(j));
         }
-        floorList.get(floorCount - 1).setNextFloor(null);
+        floorList.get(floorCount - 1).setNext(null);
 
         String strategy = Objects.requireNonNull(form.getComboBoxStrategy().getSelectedItem()).toString();
 

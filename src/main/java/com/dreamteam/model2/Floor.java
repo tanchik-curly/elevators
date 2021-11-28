@@ -2,7 +2,7 @@ package com.dreamteam.model2;
 
 import com.dreamteam.console_colors.ConsoleColors;
 import com.dreamteam.view.ObservableProperties;
-import com.dreamteam.view.viewModels.UserQueueViewModel;
+import com.dreamteam.view.viewModels.PassengerQueueViewModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,50 +15,58 @@ import java.util.*;
 @Setter
 @Slf4j
 public class Floor {
+
+    private int current;
+
+    private Floor next;
+
+    private Floor previous;
+
+    private Map<Elevator, Queue<Passenger>> passengerElevatorQueue;
+
+    private PropertyChangeSupport propertyChangeSupport;
+
     public static int MAX_FLOOR_AMOUNT = 30;
 
-    private int number;
-    private Map<Elevator, Queue<Passenger>> usersQueueToElevator;
-    private Floor previousFloor;
-    private Floor nextFloor;
-
-    private PropertyChangeSupport support;
-
-    public Floor(int number, PropertyChangeListener listener) {
-        this.number = number;
-
-        support = new PropertyChangeSupport(this);
-        support.addPropertyChangeListener(listener);
+    public Floor(int currentFloorNumber, PropertyChangeListener listener) {
+        this.current = currentFloorNumber;
+        propertyChangeSupport = new PropertyChangeSupport(this);
+        propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     public void initQueues(List<Elevator> elevators) {
-        usersQueueToElevator = new HashMap<>();
+        passengerElevatorQueue = new HashMap<>();
         for (var elevator: elevators) {
-            if (!usersQueueToElevator.containsKey(elevator)) {
-                usersQueueToElevator.put(elevator, new ArrayDeque<>());
+            if (!passengerElevatorQueue.containsKey(elevator)) {
+                passengerElevatorQueue.put(elevator, new ArrayDeque<>());
             }
         }
     }
 
     public synchronized void addUserToQueue(Passenger passenger) {
-        var smallestQueue = usersQueueToElevator
+        var shortestPassengerQueue = passengerElevatorQueue
                 .values()
                 .stream()
                 .min(Comparator.comparing(Queue::size))
                 .orElseThrow(NoSuchElementException::new);
-        var elevator = usersQueueToElevator
+
+        var elevator = passengerElevatorQueue
                 .entrySet()
                 .stream()
-                .filter(entry -> smallestQueue.equals(entry.getValue()))
+                .filter(entry -> shortestPassengerQueue.equals(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .findFirst().orElseThrow(NoSuchElementException::new);
-        smallestQueue.add(passenger);
-        passenger.set_executiveElevator(elevator);
-        log.info(ConsoleColors.PURPLE+"Queue at floor" + this.getNumber()+ ", elevator" + elevator.getId() + ", queue size: " + this.getUsersQueueToElevator().get(elevator).size() + ConsoleColors.RESET);
 
-        var userQueueViewModel = new UserQueueViewModel(this.number,
-                elevator.id + 1,
-                usersQueueToElevator.get(elevator).size());
-        support.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, userQueueViewModel);
+        shortestPassengerQueue.add(passenger);
+        passenger.set_executiveElevator(elevator);
+
+        log.info(ConsoleColors.PURPLE + "Queue at floor №" + this.getCurrent() + " to elevator: " + elevator.getId() +
+                ", number of passengers in queue: " + this.getPassengerElevatorQueue().get(elevator).size() +
+                ConsoleColors.RESET);
+
+        var passengerQueueViewModel = new PassengerQueueViewModel(this.current,
+                elevator.id + 1, passengerElevatorQueue.get(elevator).size());
+
+        propertyChangeSupport.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, passengerQueueViewModel);
     }
 }

@@ -41,9 +41,9 @@ public class PassengerFactory {
                     ", ID: " +
                     passenger.get_passengerId() +
                     ", Start floor: " +
-                    passenger.get_initialFloor().getNumber() +
+                    passenger.get_initialFloor().getCurrent() +
                     ", Destination floor: " +
-                    passenger.get_finalFloor().getNumber() +
+                    passenger.get_finalFloor().getCurrent() +
                     ", " +
                     passenger.get_executiveElevator().getClass().getSimpleName() +
                     "" +
