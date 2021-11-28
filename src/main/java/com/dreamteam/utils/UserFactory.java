@@ -30,10 +30,10 @@ public class UserFactory {
                 rand.nextInt(200),
                 floorList.get(startFLoorIndex),
                 floorList.get(destinationFloorIndex));
-        floorList.get(startFLoorIndex).addUserToQueue(user);
+        floorList.get(startFLoorIndex).addPassengerToQueue(user);
         log.info(ConsoleColors.CYAN+"New user: " + user.getName() + ", ID: " + user.getId() +
-                ", Start floor: " + user.getStartFloor().getNumber() +
-                ", Destination floor: " + user.getDestinationFloor().getNumber() +
+                ", Start floor: " + user.getStartFloor().getCurrent() +
+                ", Destination floor: " + user.getDestinationFloor().getCurrent() +
                 ", " + user.getChosenElevator().getClass().getSimpleName() + "" +
                 user.getChosenElevator().getId()+ConsoleColors.RESET);
         return user;

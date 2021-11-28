@@ -7,10 +7,7 @@ import com.dreamteam.view.MainForm;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -35,19 +32,9 @@ public class Main {
         JFrame frame = new JFrame();
         var form  = new MainForm();
 
-        form.getStartButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ExecuteAlgorithm(form);
-            }
-        });
+        form.getStartButton().addActionListener(e -> ExecuteAlgorithm(form));
 
-        form.getStopButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                StopAlgorithm(form);
-            }
-        });
+        form.getStopButton().addActionListener(e -> StopAlgorithm(form));
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
@@ -141,12 +128,12 @@ public class Main {
             floorList.add(new Floor(i, observer));
         }
 
-        floorList.get(0).setPreviousFloor(null);
+        floorList.get(0).setPrevious(null);
         for (int i = 0, j = 1; j < floorAmount; ++i, ++j) {
-            floorList.get(j).setPreviousFloor(floorList.get(i));
-            floorList.get(i).setNextFloor(floorList.get(j));
+            floorList.get(j).setPrevious(floorList.get(i));
+            floorList.get(i).setNext(floorList.get(j));
         }
-        floorList.get(floorAmount - 1).setNextFloor(null);
+        floorList.get(floorAmount - 1).setNext(null);
 
         String strategy = Objects.requireNonNull(form.getComboBoxStrategy().getSelectedItem()).toString();
 

@@ -22,37 +22,37 @@ public class ElevatorA extends Elevator {
             } else {
                 // Elevator goes to start floor of the first user in waiting users list
                 this.currentDestination = waitingUsers.poll().getStartFloor();
-                if (currentDestination.getNumber() >= this.currentFloor.getNumber()) {
+                if (currentDestination.getCurrent() >= this.currentFloor.getCurrent()) {
                     direction = ElevatorDirection.UP;
                 } else {
                     direction = ElevatorDirection.DOWN;
                 }
-                log.info(ConsoleColors.YELLOW+"ElevatorA" + this.id + " goes to floor " + currentDestination.getNumber() + ", direction: " + direction+ConsoleColors.RESET);
+                log.info(ConsoleColors.YELLOW+"ElevatorA" + this.id + " goes to floor " + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
             }
         } else {
             int destFloor;
             if (direction == ElevatorDirection.UP) {
                 destFloor = activeUsers.stream()
                         .map(User::getDestinationFloor)
-                        .map(Floor::getNumber)
-                        .filter(x -> x >= this.currentFloor.getNumber())
+                        .map(Floor::getCurrent)
+                        .filter(x -> x >= this.currentFloor.getCurrent())
                         .min(Integer::compareTo)
                         .orElse(-1);
             } else {
                 destFloor = activeUsers.stream()
                         .map(User::getDestinationFloor)
-                        .map(Floor::getNumber)
-                        .filter(x -> x < this.currentFloor.getNumber())
+                        .map(Floor::getCurrent)
+                        .filter(x -> x < this.currentFloor.getCurrent())
                         .max(Integer::compareTo)
                         .orElse(-1);
             }
             if (destFloor == -1) {
                 destFloor = activeUsers.stream()
                         .map(User::getDestinationFloor)
-                        .map(Floor::getNumber)
-                        .min(Comparator.comparingInt(x -> Math.abs(x - this.currentFloor.getNumber())))
+                        .map(Floor::getCurrent)
+                        .min(Comparator.comparingInt(x -> Math.abs(x - this.currentFloor.getCurrent())))
                         .get();
-                if (destFloor >= this.currentFloor.getNumber()) {
+                if (destFloor >= this.currentFloor.getCurrent()) {
                     direction = ElevatorDirection.UP;
                 } else {
                     direction = ElevatorDirection.DOWN;
@@ -60,10 +60,10 @@ public class ElevatorA extends Elevator {
             }
             int finalDestFloor = destFloor;
             User currentUser = activeUsers.stream()
-                    .filter(x -> x.getDestinationFloor().getNumber() == finalDestFloor)
+                    .filter(x -> x.getDestinationFloor().getCurrent() == finalDestFloor)
                     .findFirst().get();
             this.currentDestination = currentUser.getDestinationFloor();
-            log.info(ConsoleColors.YELLOW+"ElevatorA" + this.id + " goes to floor " + currentDestination.getNumber() + ", direction: " + direction+ConsoleColors.RESET);
+            log.info(ConsoleColors.YELLOW+"ElevatorA" + this.id + " goes to floor " + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
         }
         moveToFloor(this.currentDestination);
     }

@@ -3,15 +3,10 @@ package com.dreamteam;
 import com.dreamteam.model2.Main;
 import com.dreamteam.view.*;
 import com.dreamteam.view.viewModels.ElevatorViewModel;
-import com.dreamteam.view.viewModels.UserQueueViewModel;
+import com.dreamteam.view.viewModels.PassengerQueueViewModel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Random;
@@ -51,7 +46,7 @@ public class Observer implements PropertyChangeListener {
         }
 
         if(evt.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
-            var userQueue = (UserQueueViewModel)evt.getNewValue();
+            var userQueue = (PassengerQueueViewModel)evt.getNewValue();
             var unicodeEmojis = new String[] {
                     "\uD83D\uDC69", // man
                     "\uD83D\uDC68", // woman

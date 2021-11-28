@@ -3,7 +3,7 @@ import lombok.*;
 
 @AllArgsConstructor
 @Getter
-public class UserQueueViewModel {
+public class PassengerQueueViewModel {
     private int currentFloor;
     private int elevatorNumber;
     private int usersInQueue;
