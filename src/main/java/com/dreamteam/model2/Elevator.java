@@ -3,7 +3,7 @@ package com.dreamteam.model2;
 import com.dreamteam.console_colors.ConsoleColors;
 import com.dreamteam.view.viewModels.ElevatorViewModel;
 import com.dreamteam.view.ObservableProperties;
-import com.dreamteam.view.viewModels.UserQueueViewModel;
+import com.dreamteam.view.viewModels.PassengerQueueViewModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -79,18 +79,18 @@ public abstract class Elevator {
     protected synchronized void pickupUsers() {
         if (currentFloor == null) return;
         while (true) {
-            if (!currentFloor.getUsersQueueToElevator().get(this).isEmpty()) {
-                Passenger passenger = currentFloor.getUsersQueueToElevator().get(this).element();
+            if (!currentFloor.getPassengerElevatorQueue().get(this).isEmpty()) {
+                Passenger passenger = currentFloor.getPassengerElevatorQueue().get(this).element();
                 if (passenger.grantPassengerAccess(this)) {
                     waitingPassengers.remove(passenger);
-                    currentFloor.getUsersQueueToElevator().get(this).poll();
+                    currentFloor.getPassengerElevatorQueue().get(this).poll();
                     activePassengers.add(passenger);
                     log.info(ConsoleColors.BLUE+"User " + passenger.get_passengerName() + "" + passenger.get_passengerId() +
                             " entered Elevator" + this.getId() +  ", active users: " + activePassengers.size()+ConsoleColors.RESET);
 
-                    var userQueueViewModel = new UserQueueViewModel(currentFloor.getNumber(),
+                    var userQueueViewModel = new PassengerQueueViewModel(currentFloor.getCurrent(),
                             id + 1,
-                            currentFloor.getUsersQueueToElevator().get(this).size());
+                            currentFloor.getPassengerElevatorQueue().get(this).size());
                     support.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, userQueueViewModel);
                 } else {
                     break;
@@ -113,9 +113,9 @@ public abstract class Elevator {
 
     public synchronized void moveToFloor(Floor floor) throws InterruptedException {
 
-        var tempFloorNumber = currentFloor.getNumber();
+        var tempFloorNumber = currentFloor.getCurrent();
 
-        while(tempFloorNumber != currentDestination.getNumber()) {
+        while(tempFloorNumber != currentDestination.getCurrent()) {
             var elevatorViewModel = new ElevatorViewModel(id + 1,
                     activePassengers.size(),
                     getCurrentCapacity(),
@@ -138,7 +138,7 @@ public abstract class Elevator {
         this.currentFloor = floor;
 
         log.info(ConsoleColors.YELLOW+"Elevator" + this.getId() + ", current floor: " +
-                (this.currentFloor == null ? "NULL" : this.currentFloor.getNumber())+ConsoleColors.RESET);
+                (this.currentFloor == null ? "NULL" : this.currentFloor.getCurrent())+ConsoleColors.RESET);
     }
 }
 
