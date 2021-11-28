@@ -28,8 +28,8 @@ public abstract class Elevator {
     protected int id;
     protected ElevatorStatus status;
     protected ElevatorDirection direction;
-    protected List<User> activeUsers;
-    protected Queue<User> waitingUsers;
+    protected List<Passenger> activePassengers;
+    protected Queue<Passenger> waitingPassengers;
     protected Floor currentFloor;
     protected Floor currentDestination;
 
@@ -39,27 +39,27 @@ public abstract class Elevator {
         this.currentFloor = floor;
         id = counter++;
         status = ElevatorStatus.FREE;
-        activeUsers = new ArrayList<>();
-        waitingUsers = new LinkedList<>();
+        activePassengers = new ArrayList<>();
+        waitingPassengers = new LinkedList<>();
 
         support = new PropertyChangeSupport(this);
         support.addPropertyChangeListener(listener);
     }
 
-    public synchronized void invokeElevator(User user) {
+    public synchronized void invokeElevator(Passenger passenger) {
         if (status == ElevatorStatus.BUSY) {
-            waitingUsers.add(user);
+            waitingUsers.add(passenger);
 
             log.info(ConsoleColors.BLUE + "User #" + user.getId() + " " + user.getName() + " added to elevator #"
                     + this.getId() + " waiting list, size: " + waitingUsers.size()+ConsoleColors.RESET);
         } else if (status == ElevatorStatus.FREE) {
             status = ElevatorStatus.BUSY;
 
-            if (user.getStartFloor() != currentFloor) {
-                waitingUsers.add(user);
+            if (user.get_initialFloor() != currentFloor) {
+                waitingUsers.add(passenger);
 
                 log.info(ConsoleColors.YELLOW + "Elevator #" + this.getId() + " goes to " + "user #"
-                        + user.getId() + " " + user.getName() + ConsoleColors.RESET);
+                        + user.getId() + " " + passenger.getName() + ConsoleColors.RESET);
             }
         }
     }
@@ -74,7 +74,7 @@ public abstract class Elevator {
     }
 
     protected synchronized void removeLeavingUsers() {
-        if (activeUsers.removeIf(x -> x.getDestinationFloor() == currentFloor)) {
+        if (activePassengers.removeIf(x -> x.getDestinationFloor() == currentFloor)) {
             log.info(ConsoleColors.BLUE + "User(s) left elevator #" + this.getId() + ConsoleColors.RESET);
         } else {
             log.info(ConsoleColors.BLUE + "No users left elevator #" + this.getId() + ConsoleColors.RESET);
@@ -87,19 +87,18 @@ public abstract class Elevator {
 
         while (true) {
             if (!currentFloor.getUsersQueueToElevator().get(this).isEmpty()) {
-                var user = currentFloor.getUsersQueueToElevator().get(this).element();
-                if (user.canUserEnter(this)) {
-                    waitingUsers.remove(user);
+                Passenger passenger = currentFloor.getUsersQueueToElevator().get(this).element();
+                if (passenger.grantPassengerAccess(this)) {
+                    waitingPassengers.remove(passenger);
                     currentFloor.getUsersQueueToElevator().get(this).poll();
-                    activeUsers.add(user);
+                    activePassengers.add(passenger);
 
-                    log.info(ConsoleColors.BLUE + "User #" + user.getId() + " " + user.getName() + " entered elevator #"
+                    log.info(ConsoleColors.BLUE + "User #" + passenger.getId() + " " + passenger.getName() + " entered elevator #"
                             + this.getId() + ", active users: " + activeUsers.size() +ConsoleColors.RESET);
 
                     var userQueueViewModel = new UserQueueViewModel(currentFloor.getNumber(),
                             id + 1,
                             currentFloor.getUsersQueueToElevator().get(this).size());
-
                     support.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, userQueueViewModel);
                 } else {
                     break;
@@ -113,11 +112,11 @@ public abstract class Elevator {
     protected abstract void moveToNextFloor() throws InterruptedException;
 
     public synchronized int getActiveUsersCount() {
-        return activeUsers.size();
+        return activePassengers.size();
     }
 
     public synchronized int getCurrentWeight() {
-        return activeUsers.stream().map(User::getWeight).reduce(0, Integer::sum);
+        return activePassengers.stream().map(Passenger::getWeight).reduce(0, Integer::sum);
     }
 
     public synchronized void moveToFloor(Floor floor) throws InterruptedException {
@@ -126,7 +125,7 @@ public abstract class Elevator {
         while (tempFloorNumber != currentDestination.getNumber()) {
             var elevatorViewModel = new ElevatorViewModel(
                     id + 1,
-                    activeUsers.size(),
+                    activePassengers.size(),
                     getCurrentWeight(),
                     Elevator.MAX_USERS_COUNT,
                     Elevator.MAX_ACCEPTABLE_WEIGHT,
@@ -141,6 +140,7 @@ public abstract class Elevator {
             }
 
              sleep(50);
+
         }
 
         this.currentFloor = floor;
@@ -149,3 +149,4 @@ public abstract class Elevator {
                 + (this.currentFloor == null ? "NULL" : this.currentFloor.getNumber()) + ConsoleColors.RESET);
     }
 }
+

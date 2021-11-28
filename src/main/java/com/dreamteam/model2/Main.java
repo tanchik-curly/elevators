@@ -1,7 +1,7 @@
 package com.dreamteam.model2;
 
 import com.dreamteam.Observer;
-import com.dreamteam.utils.UserFactory;
+import com.dreamteam.utils.PassengerFactory;
 import com.dreamteam.view.FloorRenderer;
 import com.dreamteam.view.MainForm;
 import lombok.SneakyThrows;
@@ -157,8 +157,8 @@ public class Main {
                     @SneakyThrows
                     public void run() {
                         new Thread(() -> {
-                            User user = UserFactory.createNewUser(floorList);
-                            user.callElevator();
+                            Passenger passenger = PassengerFactory.createPassenger(floorList);
+                            passenger.invokeElevator();
                         }).start();
                         }
             };
