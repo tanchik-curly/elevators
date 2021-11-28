@@ -3,13 +3,12 @@ package com.dreamteam;
 import com.dreamteam.model2.Main;
 import com.dreamteam.view.*;
 import com.dreamteam.view.viewModels.ElevatorViewModel;
-import com.dreamteam.view.viewModels.UserQueueViewModel;
+import com.dreamteam.view.viewModels.PassengerQueueViewModel;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Random;
 
 public class Observer implements PropertyChangeListener {
     public JTable table;
@@ -43,7 +42,7 @@ public class Observer implements PropertyChangeListener {
             }
         }
         else if(event.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
-            var newUserQueue = (UserQueueViewModel)event.getNewValue();
+            var newUserQueue = (PassengerQueueViewModel)event.getNewValue();
 
             StringBuilder waitingPeople = new StringBuilder();
             for(int i = 0; i < newUserQueue.getUsersInQueue(); i++) {
