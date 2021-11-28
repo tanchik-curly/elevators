@@ -86,7 +86,7 @@ public class AccumulativeElevator extends Elevator {
                 }
             }
 
-            int finalDestinationFloor = destFloor;
+            int finalDestinationFloor = destinationFloorNumber;
             Passenger currentPassenger = activePassengers.stream()
                     .filter(x -> x.get_finalFloor().getCurrent() == finalDestinationFloor)
                     .findFirst().orElse(null);

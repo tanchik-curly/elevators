@@ -68,7 +68,7 @@ public class DirectElevator extends Elevator {
 
     private Passenger findFirstUser(int resultFloor) {
         return activePassengers.stream()
-                .filter(x -> x.getDestinationFloor().getCurrent() == resultFloor)
+                .filter(x -> x.get_finalFloor().getCurrent() == resultFloor)
                 .findFirst().get();
     }
 }
