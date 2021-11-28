@@ -18,7 +18,7 @@ public class Floor {
     public static int MAX_FLOOR_AMOUNT = 30;
 
     private int number;
-    private Map<Elevator, Queue<User>> usersQueueToElevator;
+    private Map<Elevator, Queue<Passenger>> usersQueueToElevator;
     private Floor previousFloor;
     private Floor nextFloor;
 
@@ -40,7 +40,7 @@ public class Floor {
         }
     }
 
-    public synchronized void addUserToQueue(User user) {
+    public synchronized void addUserToQueue(Passenger passenger) {
         var smallestQueue = usersQueueToElevator
                 .values()
                 .stream()
@@ -52,8 +52,8 @@ public class Floor {
                 .filter(entry -> smallestQueue.equals(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .findFirst().orElseThrow(NoSuchElementException::new);
-        smallestQueue.add(user);
-        user.setChosenElevator(elevator);
+        smallestQueue.add(passenger);
+        passenger.set_executiveElevator(elevator);
         log.info(ConsoleColors.PURPLE+"Queue at floor" + this.getNumber()+ ", elevator" + elevator.getId() + ", queue size: " + this.getUsersQueueToElevator().get(elevator).size() + ConsoleColors.RESET);
 
         var userQueueViewModel = new UserQueueViewModel(this.number,
