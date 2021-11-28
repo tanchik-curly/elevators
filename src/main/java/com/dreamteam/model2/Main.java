@@ -136,7 +136,7 @@ public class Main {
 
         if(strategy.equals("Strategy B")){
             for (int i = 0; i < elevatorCount; ++i) {
-                elevatorList.add(new ElevatorB(floorList.get(0), observer, ElevatorDirection.UP));
+                elevatorList.add(new AccumulativeElevator(floorList.get(0), observer));
             }
         }
 
@@ -144,7 +144,7 @@ public class Main {
 
         elevatorList.forEach(el -> new Thread(() -> {
             try {
-                el.process();
+                el.processElevator();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

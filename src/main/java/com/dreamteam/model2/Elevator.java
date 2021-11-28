@@ -21,8 +21,8 @@ import static java.lang.Thread.sleep;
 @Setter
 @Slf4j
 public abstract class Elevator {
-    public static final int MAX_USER_COUNT = 30;
-    public static final int CAPACITY = 1000;
+    public static final int MAX_USERS_COUNT = 30;
+    public static final int MAX_ACCEPTABLE_WEIGHT = 1000;
     @Setter
     private static int counter = 0;
     protected int id;
@@ -35,8 +35,8 @@ public abstract class Elevator {
 
     private PropertyChangeSupport support;
 
-    public Elevator(Floor currentFloor, PropertyChangeListener listener) {
-        this.currentFloor = currentFloor;
+    public Elevator(Floor floor, PropertyChangeListener listener) {
+        this.currentFloor = floor;
         id = counter++;
         status = ElevatorStatus.FREE;
         activeUsers = new ArrayList<>();
@@ -46,51 +46,60 @@ public abstract class Elevator {
         support.addPropertyChangeListener(listener);
     }
 
-    public synchronized void invoke(User user) {
+    public synchronized void invokeElevator(User user) {
         if (status == ElevatorStatus.BUSY) {
             waitingUsers.add(user);
-            log.info(ConsoleColors.BLUE+"User " + user.getName() + user.getId() + " added to " + "Elevator" + this.getId() + " waiting list, size: " + waitingUsers.size()+ConsoleColors.RESET);
-        } else if (status == ElevatorStatus.FREE){
+
+            log.info(ConsoleColors.BLUE + "User #" + user.getId() + " " + user.getName() + " added to elevator #"
+                    + this.getId() + " waiting list, size: " + waitingUsers.size()+ConsoleColors.RESET);
+        } else if (status == ElevatorStatus.FREE) {
             status = ElevatorStatus.BUSY;
+
             if (user.getStartFloor() != currentFloor) {
                 waitingUsers.add(user);
-                log.info(ConsoleColors.YELLOW+"Elevator" + this.getId() + " goes to " + "user " + user.getName() + user.getId()+ConsoleColors.RESET);
+
+                log.info(ConsoleColors.YELLOW + "Elevator #" + this.getId() + " goes to " + "user #"
+                        + user.getId() + " " + user.getName() + ConsoleColors.RESET);
             }
         }
     }
 
-    public void process() throws InterruptedException {
+    public void processElevator() throws InterruptedException {
         while (true) {
             sleep(80);
-            deleteUsersWhoExitOnCurrentFloor();
-            pickupUsers();
-            moveToTheNextFloor();
+            removeLeavingUsers();
+            takeUsers();
+            moveToNextFloor();
         }
     }
 
-    protected synchronized void deleteUsersWhoExitOnCurrentFloor() {
+    protected synchronized void removeLeavingUsers() {
         if (activeUsers.removeIf(x -> x.getDestinationFloor() == currentFloor)) {
-            log.info(ConsoleColors.BLUE+"User(s) left Elevator" + this.getId()+ConsoleColors.RESET);
+            log.info(ConsoleColors.BLUE + "User(s) left elevator #" + this.getId() + ConsoleColors.RESET);
         } else {
-            log.info(ConsoleColors.BLUE+"No users left Elevator" + this.getId()+ConsoleColors.RESET);
+            log.info(ConsoleColors.BLUE + "No users left elevator #" + this.getId() + ConsoleColors.RESET);
         }
     }
 
-    protected synchronized void pickupUsers() {
-        if (currentFloor == null) return;
+    protected synchronized void takeUsers() {
+        if (currentFloor == null)
+            return;
+
         while (true) {
             if (!currentFloor.getUsersQueueToElevator().get(this).isEmpty()) {
-                User user = currentFloor.getUsersQueueToElevator().get(this).element();
+                var user = currentFloor.getUsersQueueToElevator().get(this).element();
                 if (user.canUserEnter(this)) {
                     waitingUsers.remove(user);
                     currentFloor.getUsersQueueToElevator().get(this).poll();
                     activeUsers.add(user);
-                    log.info(ConsoleColors.BLUE+"User " + user.getName() + "" + user.getId() +
-                            " entered Elevator" + this.getId() +  ", active users: " + activeUsers.size()+ConsoleColors.RESET);
+
+                    log.info(ConsoleColors.BLUE + "User #" + user.getId() + " " + user.getName() + " entered elevator #"
+                            + this.getId() + ", active users: " + activeUsers.size() +ConsoleColors.RESET);
 
                     var userQueueViewModel = new UserQueueViewModel(currentFloor.getNumber(),
                             id + 1,
                             currentFloor.getUsersQueueToElevator().get(this).size());
+
                     support.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, userQueueViewModel);
                 } else {
                     break;
@@ -101,26 +110,26 @@ public abstract class Elevator {
         }
     }
 
-    protected abstract void moveToTheNextFloor() throws InterruptedException;
+    protected abstract void moveToNextFloor() throws InterruptedException;
 
     public synchronized int getActiveUsersCount() {
         return activeUsers.size();
     }
 
-    public synchronized int getCurrentCapacity() {
+    public synchronized int getCurrentWeight() {
         return activeUsers.stream().map(User::getWeight).reduce(0, Integer::sum);
     }
 
     public synchronized void moveToFloor(Floor floor) throws InterruptedException {
+        int tempFloorNumber = currentFloor.getNumber();
 
-        var tempFloorNumber = currentFloor.getNumber();
-
-        while(tempFloorNumber != currentDestination.getNumber()) {
-            var elevatorViewModel = new ElevatorViewModel(id + 1,
+        while (tempFloorNumber != currentDestination.getNumber()) {
+            var elevatorViewModel = new ElevatorViewModel(
+                    id + 1,
                     activeUsers.size(),
-                    getCurrentCapacity(),
-                    Elevator.MAX_USER_COUNT,
-                    Elevator.CAPACITY,
+                    getCurrentWeight(),
+                    Elevator.MAX_USERS_COUNT,
+                    Elevator.MAX_ACCEPTABLE_WEIGHT,
                     tempFloorNumber);
 
             support.firePropertyChange(ObservableProperties.FLOOR_CHANGED.toString(), null, elevatorViewModel);
@@ -132,13 +141,11 @@ public abstract class Elevator {
             }
 
              sleep(50);
-
         }
 
         this.currentFloor = floor;
 
-        log.info(ConsoleColors.YELLOW+"Elevator" + this.getId() + ", current floor: " +
-                (this.currentFloor == null ? "NULL" : this.currentFloor.getNumber())+ConsoleColors.RESET);
+        log.info(ConsoleColors.YELLOW + "Elevator #" + this.getId() + ", current floor: "
+                + (this.currentFloor == null ? "NULL" : this.currentFloor.getNumber()) + ConsoleColors.RESET);
     }
 }
-

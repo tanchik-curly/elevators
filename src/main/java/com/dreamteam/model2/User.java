@@ -27,11 +27,11 @@ public class User {
     }
 
     public synchronized void callElevator() {
-       chosenElevator.invoke(this);
+       chosenElevator.invokeElevator(this);
     }
 
     public synchronized boolean canUserEnter(Elevator elevator) {
-        return elevator.getActiveUsersCount() + 1 <= Elevator.MAX_USER_COUNT
-                && elevator.getCurrentCapacity() + getWeight() <= Elevator.CAPACITY;
+        return elevator.getActiveUsersCount() + 1 <= Elevator.MAX_USERS_COUNT
+                && elevator.getCurrentWeight() + getWeight() <= Elevator.MAX_ACCEPTABLE_WEIGHT;
     }
 }
