@@ -6,12 +6,7 @@ import com.dreamteam.view.viewModels.ElevatorViewModel;
 import com.dreamteam.view.viewModels.UserQueueViewModel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Random;
@@ -41,10 +36,10 @@ public class Observer implements PropertyChangeListener {
 
             ChangeCellColor(table.getColumnModel(), elevator.getNumber(), elevator.getCurrentFloor(), status);
 
-            for(int i = 0; i < Main.floorAmount; i++) {
+            for(int i = 0; i < Main.getFloorCount(); i++) {
                 table.setValueAt("", i,elevator.getNumber() * 2);
 
-                if(i == Main.floorAmount - elevator.getCurrentFloor()) {
+                if(i == Main.getFloorCount() - elevator.getCurrentFloor()) {
                     table.setValueAt(elevator.getCurrentActiveUserAmount(), i - 1, elevator.getNumber() * 2);
                 }
             }
@@ -71,7 +66,7 @@ public class Observer implements PropertyChangeListener {
             table.getColumnModel().getColumn(userQueue.getElevatorNumber() * 2 - 1).setCellRenderer(QueueRenderer);
 
             table.setValueAt(cellText.toString(),
-                    Main.floorAmount - userQueue.getCurrentFloor() - 1,
+                    Main.getFloorCount() - userQueue.getCurrentFloor() - 1,
                     userQueue.getElevatorNumber() * 2 - 1);
         }
 
@@ -80,7 +75,7 @@ public class Observer implements PropertyChangeListener {
 
     public static void ChangeCellColor(TableColumnModel model, int elevatorIndex, int floorIndex, ElevatorStatus status)
     {
-        var ElevatorRenderer = new ElevatorRenderer(Main.floorAmount - floorIndex - 1, status);
+        var ElevatorRenderer = new ElevatorRenderer(Main.getFloorCount() - floorIndex - 1, status);
         ElevatorRenderer.setHorizontalAlignment(JLabel.CENTER);
         model.getColumn(elevatorIndex * 2).setCellRenderer(ElevatorRenderer);
     }
