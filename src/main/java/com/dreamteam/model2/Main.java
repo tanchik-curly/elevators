@@ -1,7 +1,7 @@
 package com.dreamteam.model2;
 
 import com.dreamteam.Observer;
-import com.dreamteam.utils.UserFactory;
+import com.dreamteam.utils.PassengerFactory;
 import com.dreamteam.view.FloorRenderer;
 import com.dreamteam.view.MainForm;
 import lombok.SneakyThrows;
@@ -117,12 +117,12 @@ public class Main {
             floorList.add(new Floor(i, observer));
         }
 
-        floorList.get(0).setPreviousFloor(null);
+        floorList.get(0).setPrevious(null);
         for (int i = 0, j = 1; j < floorCount; ++i, ++j) {
-            floorList.get(j).setPreviousFloor(floorList.get(i));
-            floorList.get(i).setNextFloor(floorList.get(j));
+            floorList.get(j).setPrevious(floorList.get(i));
+            floorList.get(i).setNext(floorList.get(j));
         }
-        floorList.get(floorCount - 1).setNextFloor(null);
+        floorList.get(floorCount - 1).setNext(null);
 
         String strategy = Objects.requireNonNull(form.getComboBoxStrategy().getSelectedItem()).toString();
 
@@ -136,7 +136,7 @@ public class Main {
 
         if(strategy.equals("Strategy B")){
             for (int i = 0; i < elevatorCount; ++i) {
-                elevatorList.add(new ElevatorB(floorList.get(0), observer, ElevatorDirection.UP));
+                elevatorList.add(new AccumulativeElevator(floorList.get(0), observer));
             }
         }
 
@@ -144,7 +144,7 @@ public class Main {
 
         elevatorList.forEach(el -> new Thread(() -> {
             try {
-                el.process();
+                el.processElevator();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -157,8 +157,8 @@ public class Main {
                     @SneakyThrows
                     public void run() {
                         new Thread(() -> {
-                            User user = UserFactory.createNewUser(floorList);
-                            user.callElevator();
+                            Passenger passenger = PassengerFactory.createPassenger(floorList);
+                            passenger.invokeElevator();
                         }).start();
                         }
             };
