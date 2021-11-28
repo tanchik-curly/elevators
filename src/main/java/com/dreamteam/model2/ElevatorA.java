@@ -9,7 +9,7 @@ import java.util.Comparator;
 @Slf4j
 public class ElevatorA extends Elevator {
     public ElevatorA(Floor currentFloor, PropertyChangeListener listener, ElevatorDirection elevatorDirection) {
-        super(currentFloor, elevatorDirection, listener);
+        super(currentFloor, listener);
     }
 
     @Override
