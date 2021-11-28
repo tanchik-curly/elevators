@@ -37,17 +37,17 @@ public class PassengerFactory {
         log.info(
                     ConsoleColors.CYAN +
                     "New user: " +
-                    passenger.get_passengerName() +
+                    passenger.getPassengerName() +
                     ", ID: " +
-                    passenger.get_passengerId() +
+                    passenger.getPassengerId() +
                     ", Start floor: " +
-                    passenger.get_initialFloor().getCurrent() +
+                    passenger.getInitialFloor().getCurrent() +
                     ", Destination floor: " +
-                    passenger.get_finalFloor().getCurrent() +
+                    passenger.getFinalFloor().getCurrent() +
                     ", " +
-                    passenger.get_executiveElevator().getClass().getSimpleName() +
+                    passenger.getExecutiveElevator().getClass().getSimpleName() +
                     "" +
-                    passenger.get_executiveElevator().getId() +
+                    passenger.getExecutiveElevator().getId() +
                     ConsoleColors.RESET
         );
         return passenger;

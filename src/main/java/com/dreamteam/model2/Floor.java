@@ -58,7 +58,7 @@ public class Floor {
                 .findFirst().orElseThrow(NoSuchElementException::new);
 
         shortestPassengerQueue.add(passenger);
-        passenger.set_executiveElevator(elevator);
+        passenger.setExecutiveElevator(elevator);
 
         log.info(ConsoleColors.PURPLE + "Queue at floor №" + this.getCurrent() + " to elevator: " + elevator.getId() +
                 ", number of passengers in queue: " + this.getPassengerElevatorQueue().get(elevator).size() +
