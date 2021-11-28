@@ -7,8 +7,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Comparator;
 
 @Slf4j
-public class ElevatorA extends Elevator {
-    public ElevatorA(Floor currentFloor, PropertyChangeListener listener, ElevatorDirection elevatorDirection) {
+public class DirectElevator extends Elevator {
+    public DirectElevator(Floor currentFloor, PropertyChangeListener listener) {
         super(currentFloor, listener);
     }
 
@@ -17,55 +17,59 @@ public class ElevatorA extends Elevator {
         if (activePassengers.isEmpty()) {
             if (waitingPassengers.isEmpty()) {
                 status = ElevatorStatus.FREE;
-                log.info(ConsoleColors.YELLOW+"No active and waiting users, elevator is free now"+ConsoleColors.RESET);
+                log.info(ConsoleColors.YELLOW+"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
                 return;
             } else {
-                // Elevator goes to start floor of the first user in waiting users list
-                this.currentDestination = waitingPassengers.poll().get_initialFloor();
+                this.currentDestination = waitingPassengers.poll().get_initialFloor(); //get first passenger in queue
                 if (currentDestination.getCurrent() >= this.currentFloor.getCurrent()) {
                     direction = ElevatorDirection.UP;
                 } else {
                     direction = ElevatorDirection.DOWN;
                 }
-                log.info(ConsoleColors.YELLOW+"ElevatorA" + this.id + " goes to floor " + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
+                log.info(ConsoleColors.YELLOW+"Direct elevator #" + this.id + " goes to floor "
+                        + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
             }
         } else {
-            int destFloor;
+            int newDestination;
             if (direction == ElevatorDirection.UP) {
-                destFloor = activePassengers.stream()
+                newDestination = activePassengers.stream()
                         .map(Passenger::get_finalFloor)
                         .map(Floor::getCurrent)
                         .filter(x -> x >= this.currentFloor.getCurrent())
                         .min(Integer::compareTo)
-                        .orElse(-1);
+                        .orElse(Integer.MAX_VALUE);
             } else {
-                destFloor = activePassengers.stream()
+                newDestination = activePassengers.stream()
                         .map(Passenger::get_finalFloor)
                         .map(Floor::getCurrent)
                         .filter(x -> x < this.currentFloor.getCurrent())
                         .max(Integer::compareTo)
-                        .orElse(-1);
+                        .orElse(Integer.MAX_VALUE);
             }
-            if (destFloor == -1) {
-                destFloor = activePassengers.stream()
+            if (newDestination == Integer.MAX_VALUE) {
+                newDestination = activePassengers.stream()
                         .map(Passenger::get_finalFloor)
                         .map(Floor::getCurrent)
                         .min(Comparator.comparingInt(x -> Math.abs(x - this.currentFloor.getCurrent())))
                         .get();
-                if (destFloor >= this.currentFloor.getCurrent()) {
-                    direction = ElevatorDirection.UP;
-                } else {
+                if (newDestination < this.currentFloor.getCurrent()) {
                     direction = ElevatorDirection.DOWN;
+                } else {
+                    direction = ElevatorDirection.UP;
                 }
             }
-            int finalDestFloor = destFloor;
-            Passenger currentPassenger = activePassengers.stream()
-                    .filter(x -> x.get_finalFloor().getCurrent() == finalDestFloor)
-                    .findFirst().get();
+            Passenger currentPassenger = findFirstUser(newDestination);
             this.currentDestination = currentPassenger.get_finalFloor();
-            log.info(ConsoleColors.YELLOW+"ElevatorA" + this.id + " goes to floor " + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
+            log.info(ConsoleColors.YELLOW+"Direct elevator #" + this.id + " goes to floor "
+                    + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
         }
         moveToFloor(this.currentDestination);
+    }
+
+    private Passenger findFirstUser(int resultFloor) {
+        return activePassengers.stream()
+                .filter(x -> x.get_finalFloor().getCurrent() == resultFloor)
+                .findFirst().get();
     }
 }
 
