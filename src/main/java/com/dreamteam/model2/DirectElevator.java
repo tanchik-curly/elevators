@@ -20,7 +20,7 @@ public class DirectElevator extends Elevator {
                 log.info(ConsoleColors.YELLOW+"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
                 return;
             } else {
-                this.currentDestination = waitingPassengers.poll().get_initialFloor(); //get first passenger in queue
+                this.currentDestination = waitingPassengers.poll().getInitialFloor(); //get first passenger in queue
                 if (currentDestination.getCurrent() >= this.currentFloor.getCurrent()) {
                     direction = ElevatorDirection.UP;
                 } else {
@@ -33,14 +33,14 @@ public class DirectElevator extends Elevator {
             int newDestination;
             if (direction == ElevatorDirection.UP) {
                 newDestination = activePassengers.stream()
-                        .map(Passenger::get_finalFloor)
+                        .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
                         .filter(x -> x >= this.currentFloor.getCurrent())
                         .min(Integer::compareTo)
                         .orElse(Integer.MAX_VALUE);
             } else {
                 newDestination = activePassengers.stream()
-                        .map(Passenger::get_finalFloor)
+                        .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
                         .filter(x -> x < this.currentFloor.getCurrent())
                         .max(Integer::compareTo)
@@ -48,7 +48,7 @@ public class DirectElevator extends Elevator {
             }
             if (newDestination == Integer.MAX_VALUE) {
                 newDestination = activePassengers.stream()
-                        .map(Passenger::get_finalFloor)
+                        .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
                         .min(Comparator.comparingInt(x -> Math.abs(x - this.currentFloor.getCurrent())))
                         .get();
@@ -59,7 +59,7 @@ public class DirectElevator extends Elevator {
                 }
             }
             Passenger currentPassenger = findFirstUser(newDestination);
-            this.currentDestination = currentPassenger.get_finalFloor();
+            this.currentDestination = currentPassenger.getFinalFloor();
             log.info(ConsoleColors.YELLOW+"Direct elevator #" + this.id + " goes to floor "
                     + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
         }
@@ -68,7 +68,7 @@ public class DirectElevator extends Elevator {
 
     private Passenger findFirstUser(int resultFloor) {
         return activePassengers.stream()
-                .filter(x -> x.get_finalFloor().getCurrent() == resultFloor)
+                .filter(x -> x.getFinalFloor().getCurrent() == resultFloor)
                 .findFirst().get();
     }
 }
