@@ -32,11 +32,11 @@ public class Passenger {
     }
 
     public synchronized boolean grantPassengerAccess(Elevator currElevator) {
-        return currElevator.getActiveUsersCount() + 1 <= Elevator.MAX_USER_COUNT && currElevator.getCurrentCapacity() + get_passengerWeight() <= Elevator.CAPACITY;
+        return currElevator.getActiveUsersCount() + 1 <= Elevator.MAX_USERS_COUNT && currElevator.getCurrentWeight() + get_passengerWeight() <= Elevator.MAX_ACCEPTABLE_WEIGHT;
     }
 
     public synchronized void invokeElevator() {
-        _executiveElevator.invoke(this);
+        _executiveElevator.invokeElevator(this);
     }
 
 }
