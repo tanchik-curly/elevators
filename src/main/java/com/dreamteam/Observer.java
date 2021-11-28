@@ -13,70 +13,57 @@ import java.util.Random;
 
 public class Observer implements PropertyChangeListener {
     public JTable table;
-    private static Random random = new Random();
 
     public Observer(JTable table) {
         this.table = table;
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if(evt.getPropertyName().equals(ObservableProperties.FLOOR_CHANGED.toString())) {
-            var elevator = (ElevatorViewModel)evt.getNewValue();
+    public void propertyChange(PropertyChangeEvent event) {
+        if(event.getPropertyName().equals(ObservableProperties.FLOOR_CHANGED.toString())) {
+            var newElevator = (ElevatorViewModel)event.getNewValue();
             ElevatorStatus status = ElevatorStatus.FREE;
 
-            if(elevator.getCurrentActiveUserAmount() > 0) {
+            if(newElevator.getCurrentActiveUserAmount() == newElevator.getMaxActiveUserAmount() ||
+               newElevator.getMaxCapacity() - newElevator.getCurrentCapacity() <= 10) {
+                status = ElevatorStatus.FULL;
+            }
+            else if(newElevator.getCurrentActiveUserAmount() > 0) {
                 status = ElevatorStatus.WORK;
             }
 
-            if(elevator.getCurrentActiveUserAmount() == elevator.getMaxActiveUserAmount() ||
-               elevator.getMaxCapacity() - elevator.getCurrentCapacity() <= 40) {
-                status = ElevatorStatus.FULL;
-            }
-
-            ChangeCellColor(table.getColumnModel(), elevator.getNumber(), elevator.getCurrentFloor(), status);
+            ChangeCellColor(table.getColumnModel(), newElevator.getNumber(), newElevator.getCurrentFloor(), status);
 
             for(int i = 0; i < Main.getFloorCount(); i++) {
-                table.setValueAt("", i,elevator.getNumber() * 2);
+                table.setValueAt("", i,newElevator.getNumber() * 2);
 
-                if(i == Main.getFloorCount() - elevator.getCurrentFloor()) {
-                    table.setValueAt(elevator.getCurrentActiveUserAmount(), i - 1, elevator.getNumber() * 2);
+                if(i == Main.getFloorCount() - newElevator.getCurrentFloor()) {
+                    table.setValueAt(newElevator.getCurrentActiveUserAmount(), i - 1, newElevator.getNumber() * 2);
                 }
             }
         }
+        else if(event.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
+            var newUserQueue = (UserQueueViewModel)event.getNewValue();
 
-        if(evt.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
-            var userQueue = (UserQueueViewModel)evt.getNewValue();
-            var unicodeEmojis = new String[] {
-                    "\uD83D\uDC69", // man
-                    "\uD83D\uDC68", // woman
-                    "\uD83D\uDC66", // boy
-                    "\uD83D\uDC67", // girl
-            };
-
-            StringBuilder cellText = new StringBuilder();
-
-            for(int i = 0; i < userQueue.getUsersInQueue(); i++) {
-                var emoji = unicodeEmojis[random.nextInt(unicodeEmojis.length)];
-                cellText.append(emoji);
+            StringBuilder waitingPeople = new StringBuilder();
+            for(int i = 0; i < newUserQueue.getUsersInQueue(); i++) {
+                waitingPeople.append(Emoji.getRandom());
             }
+            var queueRenderer = new QueueCellRenderer();
+            queueRenderer.setHorizontalAlignment(JLabel.RIGHT);
+            table.getColumnModel().getColumn(newUserQueue.getElevatorNumber() * 2 - 1).setCellRenderer(queueRenderer);
 
-            var QueueRenderer = new QueueCellRenderer();
-            QueueRenderer.setHorizontalAlignment(JLabel.RIGHT);
-            table.getColumnModel().getColumn(userQueue.getElevatorNumber() * 2 - 1).setCellRenderer(QueueRenderer);
-
-            table.setValueAt(cellText.toString(),
-                    Main.getFloorCount() - userQueue.getCurrentFloor() - 1,
-                    userQueue.getElevatorNumber() * 2 - 1);
+            table.setValueAt(waitingPeople.toString(),
+                    Main.getFloorCount() - newUserQueue.getCurrentFloor() - 1,
+                    newUserQueue.getElevatorNumber() * 2 - 1);
         }
-
         table.repaint();
     }
 
-    public static void ChangeCellColor(TableColumnModel model, int elevatorIndex, int floorIndex, ElevatorStatus status)
+    public static void ChangeCellColor(TableColumnModel model, int elevatorIndex, int floorNum, ElevatorStatus status)
     {
-        var ElevatorRenderer = new ElevatorRenderer(Main.getFloorCount() - floorIndex - 1, status);
-        ElevatorRenderer.setHorizontalAlignment(JLabel.CENTER);
-        model.getColumn(elevatorIndex * 2).setCellRenderer(ElevatorRenderer);
+        var elevatorRenderer = new ElevatorRenderer(Main.getFloorCount() - floorNum - 1, status);
+        elevatorRenderer.setHorizontalAlignment(JLabel.CENTER);
+        model.getColumn(elevatorIndex * 2).setCellRenderer(elevatorRenderer);
     }
 }
