@@ -129,7 +129,7 @@ public class Main {
         Elevator.setCounter(0);
         if(strategy.equals("Strategy A")){
             for (int i = 0; i < elevatorCount; ++i) {
-                elevatorList.add(new ElevatorA(floorList.get(0), observer, ElevatorDirection.UP));
+                elevatorList.add(new DirectElevator(floorList.get(0), observer));
             }
 
         }
