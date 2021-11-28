@@ -21,7 +21,7 @@
               <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Floor amount"/>
+              <text value="Floor count"/>
             </properties>
           </component>
           <vspacer id="6ebdb">
@@ -42,7 +42,7 @@
               <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Elevator amount"/>
+              <text value="Elevator count"/>
             </properties>
           </component>
           <component id="249cf" class="javax.swing.JLabel">
@@ -72,12 +72,12 @@
               <text value="Start"/>
             </properties>
           </component>
-          <component id="7bbe9" class="javax.swing.JButton" binding="stopButton" default-binding="true">
+          <component id="7bbe9" class="javax.swing.JButton" binding="resetButton" default-binding="true">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Stop"/>
+              <text value="Reset"/>
             </properties>
           </component>
           <component id="c3654" class="javax.swing.JSpinner" binding="spinnerElevatorAmount">

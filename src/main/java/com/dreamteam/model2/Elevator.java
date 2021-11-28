@@ -21,8 +21,8 @@ import static java.lang.Thread.sleep;
 @Setter
 @Slf4j
 public abstract class Elevator {
-    public static int MAX_USER_COUNT = 30;
-    public static int CAPACITY = 1000;
+    public static final int MAX_USER_COUNT = 30;
+    public static final int CAPACITY = 1000;
     @Setter
     private static int counter = 0;
     protected int id;
@@ -35,7 +35,7 @@ public abstract class Elevator {
 
     private PropertyChangeSupport support;
 
-    public Elevator(Floor currentFloor, ElevatorDirection direction, PropertyChangeListener listener) {
+    public Elevator(Floor currentFloor, PropertyChangeListener listener) {
         this.currentFloor = currentFloor;
         id = counter++;
         status = ElevatorStatus.FREE;
@@ -82,8 +82,7 @@ public abstract class Elevator {
             if (!currentFloor.getUsersQueueToElevator().get(this).isEmpty()) {
                 User user = currentFloor.getUsersQueueToElevator().get(this).element();
                 if (user.canUserEnter(this)) {
-                    if (waitingUsers.contains(user))
-                        waitingUsers.remove(user);
+                    waitingUsers.remove(user);
                     currentFloor.getUsersQueueToElevator().get(this).poll();
                     activeUsers.add(user);
                     log.info(ConsoleColors.BLUE+"User " + user.getName() + "" + user.getId() +
@@ -102,7 +101,7 @@ public abstract class Elevator {
         }
     }
 
-    abstract protected void moveToTheNextFloor() throws InterruptedException;
+    protected abstract void moveToTheNextFloor() throws InterruptedException;
 
     public synchronized int getActiveUsersCount() {
         return activeUsers.size();
@@ -126,13 +125,10 @@ public abstract class Elevator {
 
             support.firePropertyChange(ObservableProperties.FLOOR_CHANGED.toString(), null, elevatorViewModel);
 
-            switch (direction) {
-                case UP:
-                    tempFloorNumber++;
-                    break;
-                case DOWN:
-                    tempFloorNumber--;
-                    break;
+            if (direction == ElevatorDirection.UP) {
+                tempFloorNumber++;
+            } else {
+                tempFloorNumber--;
             }
 
              sleep(50);

@@ -11,9 +11,9 @@ public class MainForm {
     private JTable table1;
     private JSpinner spinnerFloorAmount;
     private JSpinner spinnerElevatorAmount;
-    private JComboBox comboBoxStrategy;
+    private JComboBox<String> comboBoxStrategy;
     private JButton startButton;
-    private JButton stopButton;
+    private JButton resetButton;
 
     public JPanel getRootPanel() {
         return this.panel1;
@@ -65,9 +65,9 @@ public class MainForm {
         startButton = new JButton();
         startButton.setText("Start");
         panel2.add(startButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        stopButton = new JButton();
-        stopButton.setText("Stop");
-        panel2.add(stopButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        resetButton = new JButton();
+        resetButton.setText("Stop");
+        panel2.add(resetButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         spinnerElevatorAmount = new JSpinner();
         spinnerElevatorAmount.setAutoscrolls(true);
         spinnerElevatorAmount.setEnabled(true);
