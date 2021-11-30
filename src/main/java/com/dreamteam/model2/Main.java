@@ -2,11 +2,14 @@ package com.dreamteam.model2;
 
 import com.dreamteam.Observer;
 import com.dreamteam.utils.PassengerFactory;
+import com.dreamteam.utils.SpeedControl;
 import com.dreamteam.view.FloorRenderer;
 import com.dreamteam.view.MainForm;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -37,17 +40,21 @@ public class Main {
 
         var form  = new MainForm();
         form.getStartButton().addActionListener(e -> ExecuteAlgorithm(form));
-        form.getResetButton().addActionListener(e -> StopAlgorithm());
+        form.getResetButton().addActionListener(e -> StopAlgorithm(form));
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
-                StopAlgorithm();
+                StopAlgorithm(form);
                 System.exit(0);
             }
         });
 
-        form.getSpinnerFloorAmount().setModel(new SpinnerNumberModel(30, 3, 50, 1));
-        form.getSpinnerElevatorAmount().setModel(new SpinnerNumberModel(5, 1, 10, 1));
+        form.getSpinnerFloorAmount().setModel(new SpinnerNumberModel(10, 3, 30, 1));
+        form.getSpinnerElevatorAmount().setModel(new SpinnerNumberModel(3, 1, 8, 1));
+        JSlider slider = form.getSpeedSlider();
+        slider.setInverted(true);
+        slider.setModel(new DefaultBoundedRangeModel(150, 0, 100, 200));
+        slider.addChangeListener(e -> SpeedControl.update(((JSlider)e.getSource()).getValue()));
 
         frame.setContentPane(form.getRootPanel());
         frame.pack();
@@ -92,11 +99,12 @@ public class Main {
         table.getColumnModel().getColumn(0).setCellRenderer(floorRenderer);
     }
 
-    private static void StopAlgorithm(){
+    private static void StopAlgorithm(MainForm form){
         if (working) {
             timer.cancel();
             Set<Thread> threads = Thread.getAllStackTraces().keySet();
             threads.forEach(Thread::interrupt);
+            clearTable(form);
             working = false;
         }
     }
@@ -127,14 +135,12 @@ public class Main {
         String strategy = Objects.requireNonNull(form.getComboBoxStrategy().getSelectedItem()).toString();
 
         Elevator.setCounter(0);
-        if(strategy.equals("Strategy A")){
+        if(strategy.equals("Direct")){
             for (int i = 0; i < elevatorCount; ++i) {
                 elevatorList.add(new DirectElevator(floorList.get(0), observer));
             }
 
-        }
-
-        if(strategy.equals("Strategy B")){
+        } else {
             for (int i = 0; i < elevatorCount; ++i) {
                 elevatorList.add(new AccumulativeElevator(floorList.get(0), observer));
             }

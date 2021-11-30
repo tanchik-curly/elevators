@@ -5,24 +5,23 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 public class ElevatorRenderer extends DefaultTableCellRenderer {
-    private int _floor;
-    private ElevatorStatus _status;
+    private final int floor;
+    private final ElevatorStatus status;
 
     public ElevatorRenderer(int floor, ElevatorStatus status)
     {
-        this._floor = floor;
-        this._status = status;
+        this.floor = floor;
+        this.status = status;
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
     {
         Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
         c.setBackground(Color.WHITE);
         c.setForeground(Color.BLACK);
 
-        if (row == _floor ) {
-            switch(_status) {
+        if (row == floor) {
+            switch(status) {
                 case FREE:
                     c.setBackground(Color.GREEN);
                     break;
