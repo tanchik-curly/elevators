@@ -41,9 +41,9 @@ public class Observer implements PropertyChangeListener {
         for(int i = 0; i < Main.getFloorCount(); i++) {
             table.setValueAt("", i,elevator.getNumber() * 2);
 
-            if(i == Main.getFloorCount() - elevator.getCurrentFloor()) {
+            if(i == Main.getFloorCount() - elevator.getCurrentFloor() - 1) {
                 table.setValueAt(currentElevatorEnjoyers + String.format(" (%d)", elevator.getCurrentCapacity()),
-                        i - 1, elevator.getNumber() * 2);
+                        i, elevator.getNumber() * 2);
             }
         }
     }
