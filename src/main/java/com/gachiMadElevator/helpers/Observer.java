@@ -21,43 +21,43 @@ public class Observer implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         if(event.getPropertyName().equals(ObservableProperties.FLOOR_CHANGED.toString())) {
-            var newElevator = (ElevatorViewModel)event.getNewValue();
-            ElevatorStatus status = ElevatorStatus.FREE;
-
-            if(newElevator.getCurrentActiveUserAmount() == newElevator.getMaxActiveUserAmount() ||
-               newElevator.getMaxCapacity() - newElevator.getCurrentCapacity() <= 10) {
-                status = ElevatorStatus.FULL;
-            }
-            else if(newElevator.getCurrentActiveUserAmount() > 0) {
-                status = ElevatorStatus.WORK;
-            }
-
-            ChangeCellColor(table.getColumnModel(), newElevator.getNumber(), newElevator.getCurrentFloor(), status);
-
-            for(int i = 0; i < Main.getFloorCount(); i++) {
-                table.setValueAt("", i,newElevator.getNumber() * 2);
-
-                if(i == Main.getFloorCount() - newElevator.getCurrentFloor()) {
-                    table.setValueAt(newElevator.getCurrentActiveUserAmount(), i - 1, newElevator.getNumber() * 2);
-                }
-            }
+            updateElevator((ElevatorViewModel) event.getNewValue());
         }
         else if(event.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
-            var newUserQueue = (PassengerQueueViewModel)event.getNewValue();
-
-            StringBuilder waitingPeople = new StringBuilder();
-            for(int i = 0; i < newUserQueue.getUsersInQueue(); i++) {
-                waitingPeople.append(Emoji.getRandom());
-            }
-            var queueRenderer = new QueueCellRenderer();
-            queueRenderer.setHorizontalAlignment(JLabel.RIGHT);
-            table.getColumnModel().getColumn(newUserQueue.getElevatorNumber() * 2 - 1).setCellRenderer(queueRenderer);
-
-            table.setValueAt(waitingPeople.toString(),
-                    Main.getFloorCount() - newUserQueue.getCurrentFloor() - 1,
-                    newUserQueue.getElevatorNumber() * 2 - 1);
+            updateQueue((PassengerQueueViewModel) event.getNewValue());
         }
         table.repaint();
+    }
+    private void updateElevator(ElevatorViewModel elevator) {
+        ElevatorStatus status = ElevatorStatus.FREE;
+        if(elevator.getCurrentActiveUserAmount() == elevator.getMaxActiveUserAmount() ||
+                elevator.getMaxCapacity() - elevator.getCurrentCapacity() <= 10) {
+            status = ElevatorStatus.FULL;
+        }
+        else if(elevator.getCurrentActiveUserAmount() > 0) {
+            status = ElevatorStatus.WORK;
+        }
+        ChangeCellColor(table.getColumnModel(), elevator.getNumber(), elevator.getCurrentFloor(), status);
+
+        for(int i = 0; i < Main.getFloorCount(); i++) {
+            table.setValueAt("", i,elevator.getNumber() * 2);
+
+            if(i == Main.getFloorCount() - elevator.getCurrentFloor()) {
+                table.setValueAt(elevator.getCurrentActiveUserAmount(), i - 1, elevator.getNumber() * 2);
+            }
+        }
+    }
+
+    private void updateQueue(PassengerQueueViewModel newQueue) {
+        String waitingPeople = "\ud83d\udc64".repeat(Math.max(0, newQueue.getUsersInQueue())) +
+                " " + newQueue.getUsersInQueue();
+        var queueRenderer = new QueueCellRenderer();
+        queueRenderer.setHorizontalAlignment(JLabel.RIGHT);
+        table.getColumnModel().getColumn(newQueue.getElevatorNumber() * 2 - 1).setCellRenderer(queueRenderer);
+
+        table.setValueAt(waitingPeople,
+                Main.getFloorCount() - newQueue.getCurrentFloor() - 1,
+                newQueue.getElevatorNumber() * 2 - 1);
     }
 
     public static void ChangeCellColor(TableColumnModel model, int elevatorIndex, int floorNum, ElevatorStatus status)
