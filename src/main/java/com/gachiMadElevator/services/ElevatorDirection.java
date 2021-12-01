@@ -1,4 +1,4 @@
-package com.gachiMadElevator.model2;
+package com.gachiMadElevator.services;
 
 public enum ElevatorDirection {
     UP,

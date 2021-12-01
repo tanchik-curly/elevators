@@ -1,6 +1,6 @@
-package com.gachiMadElevator.model2;
+package com.gachiMadElevator.services;
 
-import com.gachiMadElevator.Observer;
+import com.gachiMadElevator.helpers.Observer;
 import com.gachiMadElevator.utils.PassengerFactory;
 import com.gachiMadElevator.utils.SpeedControl;
 import com.gachiMadElevator.view.FloorRenderer;

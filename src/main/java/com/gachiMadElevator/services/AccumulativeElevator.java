@@ -1,4 +1,4 @@
-package com.gachiMadElevator.model2;
+package com.gachiMadElevator.services;
 
 import com.gachiMadElevator.console_colors.ConsoleColors;
 import lombok.extern.slf4j.Slf4j;

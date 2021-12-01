@@ -1,4 +1,4 @@
-package com.gachiMadElevator.model2;
+package com.gachiMadElevator.services;
 
 import com.gachiMadElevator.console_colors.ConsoleColors;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class DirectElevator extends Elevator {
         if (activePassengers.isEmpty()) {
             if (waitingPassengers.isEmpty()) {
                 status = ElevatorStatus.FREE;
-                log.info(ConsoleColors.PURPLE_BACKGROUND_BRIGHT+"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
+                log.info(ConsoleColors.PURPLE +"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
                 return;
             } else {
                 this.currentDestination = waitingPassengers.poll().getInitialFloor(); //get first passenger in queue
@@ -26,7 +26,7 @@ public class DirectElevator extends Elevator {
                 } else {
                     direction = ElevatorDirection.DOWN;
                 }
-                log.info(ConsoleColors.PURPLE_BACKGROUND_BRIGHT+"Direct elevator #" + this.id + " goes to floor "
+                log.info(ConsoleColors.PURPLE +"Direct elevator #" + this.id + " goes to floor "
                         + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
             }
         } else {
@@ -58,15 +58,15 @@ public class DirectElevator extends Elevator {
                     direction = ElevatorDirection.UP;
                 }
             }
-            Passenger currentPassenger = findFirstUser(newDestination);
+            Passenger currentPassenger = findFirstPassenger(newDestination);
             this.currentDestination = currentPassenger.getFinalFloor();
             log.info(ConsoleColors.YELLOW+"Direct elevator #" + this.id + " goes to floor "
-                    + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
+                    + currentDestination.getCurrent() + " with direction: " + direction+ConsoleColors.RESET);
         }
         moveToFloor(this.currentDestination);
     }
 
-    private Passenger findFirstUser(int resultFloor) {
+    private Passenger findFirstPassenger(int resultFloor) {
         return activePassengers.stream()
                 .filter(x -> x.getFinalFloor().getCurrent() == resultFloor)
                 .findFirst().get();

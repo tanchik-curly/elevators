@@ -1,8 +1,8 @@
-package com.dreamteam.utils;
+package com.gachiMadElevator.utils;
 
-import com.dreamteam.console_colors.ConsoleColors;
-import com.dreamteam.model2.Floor;
-import com.dreamteam.model2.Passenger;
+import com.gachiMadElevator.console_colors.ConsoleColors;
+import com.gachiMadElevator.services.Floor;
+import com.gachiMadElevator.services.Passenger;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

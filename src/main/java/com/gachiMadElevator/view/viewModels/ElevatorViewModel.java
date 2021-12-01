@@ -1,4 +1,4 @@
-package com.dreamteam.view.viewModels;
+package com.gachiMadElevator.view.viewModels;
 import lombok.*;
 
 @AllArgsConstructor

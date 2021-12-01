@@ -1,8 +1,6 @@
-package com.dreamteam.view;
+package com.gachiMadElevator.view;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import lombok.*;
 

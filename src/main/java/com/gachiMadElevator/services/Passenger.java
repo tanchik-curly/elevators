@@ -1,4 +1,4 @@
-package com.gachiMadElevator.model2;
+package com.gachiMadElevator.services;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

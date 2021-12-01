@@ -1,4 +1,4 @@
-package com.dreamteam.view;
+package com.gachiMadElevator.view;
 
 public enum ObservableProperties {
     FLOOR_CHANGED,

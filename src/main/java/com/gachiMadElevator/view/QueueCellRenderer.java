@@ -1,4 +1,4 @@
-package com.dreamteam.view;
+package com.gachiMadElevator.view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

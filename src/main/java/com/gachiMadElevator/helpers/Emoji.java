@@ -1,4 +1,4 @@
-package com.gachiMadElevator;
+package com.gachiMadElevator.helpers;
 
 import java.util.Random;
 
