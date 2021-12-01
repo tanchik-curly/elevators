@@ -37,12 +37,12 @@ public class Main {
         JFrame frame = new JFrame("Gachi Project");
 
         var form  = new MainForm();
-        form.getStartButton().addActionListener(e -> ExecuteAlgorithm(form));
-        form.getResetButton().addActionListener(e -> StopAlgorithm(form));
+        form.getStartButton().addActionListener(e -> executeAlgorithm(form));
+        form.getResetButton().addActionListener(e -> stopAlgorithm(form));
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
-                StopAlgorithm(form);
+                stopAlgorithm(form);
                 System.exit(0);
             }
         });
@@ -97,7 +97,7 @@ public class Main {
         table.getColumnModel().getColumn(0).setCellRenderer(floorRenderer);
     }
 
-    private static void StopAlgorithm(MainForm form){
+    private static void stopAlgorithm(MainForm form){
         if (working) {
             timer.cancel();
             Set<Thread> threads = Thread.getAllStackTraces().keySet();
@@ -107,7 +107,7 @@ public class Main {
         }
     }
 
-    private static void ExecuteAlgorithm(MainForm form) {
+    private static void executeAlgorithm(MainForm form) {
         if(working) {
             JOptionPane.showMessageDialog(null, "Elevators are already working ;)");
             return;
@@ -137,13 +137,11 @@ public class Main {
             for (int i = 0; i < elevatorCount; ++i) {
                 elevatorList.add(new DirectElevator(floorList.get(0), observer));
             }
-
         } else {
             for (int i = 0; i < elevatorCount; ++i) {
                 elevatorList.add(new AccumulativeElevator(floorList.get(0), observer));
             }
         }
-
         floorList.forEach(f -> f.initQueues(elevatorList));
 
         elevatorList.forEach(el -> new Thread(() -> {
@@ -158,14 +156,13 @@ public class Main {
         working = true;
 
         TimerTask task = new TimerTask() {
-                    @SneakyThrows
                     public void run() {
                         new Thread(() -> {
                             Passenger passenger = PassengerFactory.createPassenger(floorList);
                             passenger.invokeElevator();
                         }).start();
                         }
-            };
+        };
         timer = new Timer();
         long delay = 0L;
         long period = 60L;
