@@ -1,0 +1,3 @@
+Hello, we would like to warn you about the explicit content in this repo!
+DON'T OPEN THIS CODE until you fully realise all the consiquences (you will cry...)
+To be honest, we don't know how this code works and advise not to try to understand...
