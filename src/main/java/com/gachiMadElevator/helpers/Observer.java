@@ -1,6 +1,5 @@
 package com.gachiMadElevator.helpers;
 
-import com.gachiMadElevator.helpers.Emoji;
 import com.gachiMadElevator.services.Main;
 import com.gachiMadElevator.view.*;
 import com.gachiMadElevator.view.viewModels.ElevatorViewModel;
