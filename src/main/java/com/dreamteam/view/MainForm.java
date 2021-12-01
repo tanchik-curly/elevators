@@ -1,6 +1,8 @@
 package com.dreamteam.view;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import lombok.*;
 
@@ -14,6 +16,7 @@ public class MainForm {
     private JComboBox<String> comboBoxStrategy;
     private JButton startButton;
     private JButton resetButton;
+    private JSlider speedSlider;
 
     public JPanel getRootPanel() {
         return this.panel1;

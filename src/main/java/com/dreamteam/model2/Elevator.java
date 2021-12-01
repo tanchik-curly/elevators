@@ -1,6 +1,7 @@
 package com.dreamteam.model2;
 
 import com.dreamteam.console_colors.ConsoleColors;
+import com.dreamteam.utils.SpeedControl;
 import com.dreamteam.view.viewModels.ElevatorViewModel;
 import com.dreamteam.view.ObservableProperties;
 import com.dreamteam.view.viewModels.PassengerQueueViewModel;
@@ -66,7 +67,7 @@ public abstract class Elevator {
 
     public void processElevator() throws InterruptedException {
         while (true) {
-            sleep(80);
+            sleep(SpeedControl.getQueueSpeed().get());
             removeLeavingUsers();
             takeUsers();
             moveToNextFloor();
@@ -139,12 +140,10 @@ public abstract class Elevator {
                 tempFloorNumber--;
             }
 
-             sleep(50);
-
+             sleep(SpeedControl.getElevatorSpeed().get());
         }
 
         this.currentFloor = floor;
-
         log.info(ConsoleColors.YELLOW + "Elevator #" + this.getId() + ", current floor: "
                 + (this.currentFloor == null ? "NULL" : this.currentFloor.getCurrent()) + ConsoleColors.RESET);
     }

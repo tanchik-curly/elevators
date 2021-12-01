@@ -1,0 +1,9 @@
+
+Z
+java:S1172"8Remove this unused method parameter "elevatorDirection".(Êµ¿þÿÿÿÿ8ïË¯µÖ/
+h
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(þ¸…Æ
+r
+java:S3655>"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(Ã”ÿïüÿÿÿÿ8–ž…µÖ/
+m
+java:S36552"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(íœ ƒ8–ž…µÖ/
