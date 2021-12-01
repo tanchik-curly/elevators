@@ -1,9 +1,9 @@
-package com.dreamteam;
+package com.gachiMadElevator;
 
-import com.dreamteam.model2.Main;
-import com.dreamteam.view.*;
-import com.dreamteam.view.viewModels.ElevatorViewModel;
-import com.dreamteam.view.viewModels.PassengerQueueViewModel;
+import com.gachiMadElevator.model2.Main;
+import com.gachiMadElevator.view.*;
+import com.gachiMadElevator.view.viewModels.ElevatorViewModel;
+import com.gachiMadElevator.view.viewModels.PassengerQueueViewModel;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;

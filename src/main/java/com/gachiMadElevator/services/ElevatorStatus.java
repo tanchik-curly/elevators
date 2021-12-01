@@ -1,4 +1,4 @@
-package com.dreamteam.model2;
+package com.gachiMadElevator.model2;
 
 public enum ElevatorStatus {
     FREE,

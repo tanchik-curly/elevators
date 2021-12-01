@@ -1,6 +1,6 @@
-package com.dreamteam.model2;
+package com.gachiMadElevator.model2;
 
-import com.dreamteam.console_colors.ConsoleColors;
+import com.gachiMadElevator.console_colors.ConsoleColors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyChangeListener;
@@ -13,11 +13,11 @@ public class DirectElevator extends Elevator {
     }
 
     @Override
-    protected synchronized void moveToNextFloor() throws InterruptedException {
+    protected synchronized void findNextFloor() throws InterruptedException {
         if (activePassengers.isEmpty()) {
             if (waitingPassengers.isEmpty()) {
                 status = ElevatorStatus.FREE;
-                log.info(ConsoleColors.YELLOW+"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
+                log.info(ConsoleColors.PURPLE_BACKGROUND_BRIGHT+"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
                 return;
             } else {
                 this.currentDestination = waitingPassengers.poll().getInitialFloor(); //get first passenger in queue
@@ -26,7 +26,7 @@ public class DirectElevator extends Elevator {
                 } else {
                     direction = ElevatorDirection.DOWN;
                 }
-                log.info(ConsoleColors.YELLOW+"Direct elevator #" + this.id + " goes to floor "
+                log.info(ConsoleColors.PURPLE_BACKGROUND_BRIGHT+"Direct elevator #" + this.id + " goes to floor "
                         + currentDestination.getCurrent() + ", direction: " + direction+ConsoleColors.RESET);
             }
         } else {

@@ -1,8 +1,8 @@
-package com.dreamteam.model2;
+package com.gachiMadElevator.model2;
 
-import com.dreamteam.console_colors.ConsoleColors;
-import com.dreamteam.view.ObservableProperties;
-import com.dreamteam.view.viewModels.PassengerQueueViewModel;
+import com.gachiMadElevator.console_colors.ConsoleColors;
+import com.gachiMadElevator.view.ObservableProperties;
+import com.gachiMadElevator.view.viewModels.PassengerQueueViewModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

@@ -1,15 +1,13 @@
-package com.dreamteam.model2;
+package com.gachiMadElevator.model2;
 
-import com.dreamteam.Observer;
-import com.dreamteam.utils.PassengerFactory;
-import com.dreamteam.utils.SpeedControl;
-import com.dreamteam.view.FloorRenderer;
-import com.dreamteam.view.MainForm;
+import com.gachiMadElevator.Observer;
+import com.gachiMadElevator.utils.PassengerFactory;
+import com.gachiMadElevator.utils.SpeedControl;
+import com.gachiMadElevator.view.FloorRenderer;
+import com.gachiMadElevator.view.MainForm;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

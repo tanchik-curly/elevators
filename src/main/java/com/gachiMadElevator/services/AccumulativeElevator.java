@@ -1,6 +1,6 @@
-package com.dreamteam.model2;
+package com.gachiMadElevator.model2;
 
-import com.dreamteam.console_colors.ConsoleColors;
+import com.gachiMadElevator.console_colors.ConsoleColors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.PropertyChangeListener;
@@ -13,7 +13,7 @@ public class AccumulativeElevator extends Elevator {
     }
 
     @Override
-    protected synchronized void moveToNextFloor() throws InterruptedException {
+    protected synchronized void findNextFloor() throws InterruptedException {
         if (activePassengers.isEmpty()) {
             if (waitingPassengers.isEmpty()) {
                 this.status = ElevatorStatus.FREE;
