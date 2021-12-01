@@ -32,8 +32,8 @@ public class AccumulativeElevator extends Elevator {
                 this.direction = ElevatorDirection.DOWN;
             }
         } else {
-            int destinationFloorNumber = -1;
-            int tempFloorNumber = -1;
+            int destinationFloorNumber = Integer.MAX_VALUE;
+            int intermediateFloorNumber = Integer.MAX_VALUE;
 
             if (direction == ElevatorDirection.UP) {
                 destinationFloorNumber = activePassengers.stream()
@@ -41,18 +41,19 @@ public class AccumulativeElevator extends Elevator {
                         .map(Floor::getCurrent)
                         .filter(x -> x > this.currentFloor.getCurrent())
                         .min(Integer::compareTo)
-                        .orElse(-1);
-                tempFloorNumber = waitingPassengers.stream()
+                        .orElse(Integer.MAX_VALUE);
+
+                intermediateFloorNumber = waitingPassengers.stream()
                         .map(Passenger::getInitialFloor)
                         .map(Floor::getCurrent)
                         .filter(x -> x > this.currentFloor.getCurrent())
                         .min(Integer::compareTo)
-                        .orElse(-1);
+                        .orElse(Integer.MAX_VALUE);
 
-                if (destinationFloorNumber != -1 && tempFloorNumber != -1) {
-                    destinationFloorNumber = Math.min(destinationFloorNumber, tempFloorNumber);
-                } else if (destinationFloorNumber == -1 && tempFloorNumber != -1) {
-                    destinationFloorNumber = tempFloorNumber;
+                if (destinationFloorNumber != Integer.MAX_VALUE && intermediateFloorNumber != Integer.MAX_VALUE) {
+                    destinationFloorNumber = Math.min(destinationFloorNumber, intermediateFloorNumber);
+                } else if (destinationFloorNumber == Integer.MAX_VALUE && intermediateFloorNumber != Integer.MAX_VALUE) {
+                    destinationFloorNumber = intermediateFloorNumber;
                 }
             } else {
                 destinationFloorNumber = activePassengers.stream()
@@ -60,19 +61,19 @@ public class AccumulativeElevator extends Elevator {
                         .map(Floor::getCurrent)
                         .filter(x -> x < this.currentFloor.getCurrent())
                         .max(Integer::compareTo)
-                        .orElse(-1);
+                        .orElse(Integer.MAX_VALUE);
 
-                tempFloorNumber = waitingPassengers.stream()
+                intermediateFloorNumber = waitingPassengers.stream()
                         .map(Passenger::getInitialFloor)
                         .map(Floor::getCurrent)
                         .filter(x -> x < this.currentFloor.getCurrent())
                         .max(Integer::compareTo)
-                        .orElse(-1);
+                        .orElse(Integer.MAX_VALUE);
 
-                destinationFloorNumber = Math.max(destinationFloorNumber, tempFloorNumber);
+                destinationFloorNumber = Math.max(destinationFloorNumber, intermediateFloorNumber);
             }
 
-            if (destinationFloorNumber == -1) {
+            if (destinationFloorNumber == Integer.MAX_VALUE) {
                 destinationFloorNumber = activePassengers.stream()
                         .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
