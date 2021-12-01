@@ -113,7 +113,7 @@
               <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
-          <component id="9e4e9" class="javax.swing.JSlider" binding="speedSlider">
+          <component id="9e4e9" class="javax.swing.JSlider" binding="elevatorSpeedSlider">
             <constraints>
               <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -127,7 +127,7 @@
             </constraints>
             <properties>
               <foreground color="-1"/>
-              <text value="Speed"/>
+              <text value="Elevator Speed"/>
             </properties>
           </component>
           <vspacer id="1b018">
@@ -162,6 +162,23 @@
               <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
+          <component id="36ccf" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <foreground color="-1"/>
+              <text value="User Speed"/>
+            </properties>
+          </component>
+          <component id="4f9c2" class="javax.swing.JSlider" binding="queueSpeedSlider">
+            <constraints>
+              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-1"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <component id="4611d" class="javax.swing.JButton" binding="startButton" default-binding="true">

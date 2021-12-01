@@ -5,7 +5,6 @@ import com.gachiMadElevator.utils.PassengerFactory;
 import com.gachiMadElevator.utils.SpeedControl;
 import com.gachiMadElevator.view.FloorRenderer;
 import com.gachiMadElevator.view.MainForm;
-import lombok.SneakyThrows;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -20,15 +19,12 @@ public class Main {
     private static int floorCount;
     private static int elevatorCount;
     private static Observer observer;
-    private static Timer timer;
+    private static Timer timer = new Timer();
     private static boolean working;
+    private static List<Floor> floorList;
 
 
     public static void main(String[] args) {
-        createAndShowGUI();
-    }
-
-    private static void createAndShowGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
@@ -37,22 +33,32 @@ public class Main {
         JFrame frame = new JFrame("Gachi Project");
 
         var form  = new MainForm();
-        form.getStartButton().addActionListener(e -> ExecuteAlgorithm(form));
-        form.getResetButton().addActionListener(e -> StopAlgorithm(form));
+        form.getStartButton().addActionListener(e -> executeAlgorithm(form));
+        form.getResetButton().addActionListener(e -> stopAlgorithm(form));
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
-                StopAlgorithm(form);
+                stopAlgorithm(form);
                 System.exit(0);
             }
         });
 
         form.getSpinnerFloorAmount().setModel(new SpinnerNumberModel(10, 3, 30, 1));
         form.getSpinnerElevatorAmount().setModel(new SpinnerNumberModel(3, 1, 8, 1));
-        JSlider slider = form.getSpeedSlider();
+        JSlider slider = form.getElevatorSpeedSlider();
         slider.setInverted(true);
         slider.setModel(new DefaultBoundedRangeModel(150, 0, 100, 200));
-        slider.addChangeListener(e -> SpeedControl.update(((JSlider)e.getSource()).getValue()));
+        slider.addChangeListener(e -> SpeedControl.setElevatorSpeed(((JSlider)e.getSource()).getValue()));
+
+        slider = form.getQueueSpeedSlider();
+        slider.setInverted(true);
+        slider.setModel(new DefaultBoundedRangeModel(50, 0, 20, 80));
+        slider.addChangeListener(e -> {
+            SpeedControl.setQueueSpeed(((JSlider)e.getSource()).getValue());
+            if (working) {
+                restartTimer();
+            }
+        });
 
         frame.setContentPane(form.getRootPanel());
         frame.pack();
@@ -82,7 +88,6 @@ public class Main {
         for(int i = 0; i < elevatorCount * 2-1; i++) {
             model.addColumn("Elevator #" + i);
         }
-
         for(int i = 0; i < floorCount; i++) {
             model.addRow(new Object[elevatorCount]);
             model.setValueAt(floorCount - i, i, 0);
@@ -97,7 +102,7 @@ public class Main {
         table.getColumnModel().getColumn(0).setCellRenderer(floorRenderer);
     }
 
-    private static void StopAlgorithm(MainForm form){
+    private static void stopAlgorithm(MainForm form){
         if (working) {
             timer.cancel();
             Set<Thread> threads = Thread.getAllStackTraces().keySet();
@@ -107,7 +112,7 @@ public class Main {
         }
     }
 
-    private static void ExecuteAlgorithm(MainForm form) {
+    private static void executeAlgorithm(MainForm form) {
         if(working) {
             JOptionPane.showMessageDialog(null, "Elevators are already working ;)");
             return;
@@ -116,7 +121,7 @@ public class Main {
         clearTable(form);
         createTable(form);
 
-        List<Floor> floorList = new ArrayList<>();
+        floorList = new ArrayList<>();
         List<Elevator> elevatorList = new ArrayList<>();
 
         for (int i = 0; i < floorCount; ++i) {
@@ -142,7 +147,6 @@ public class Main {
                 elevatorList.add(new Elevator(floorList.get(0), observer, new AccumulativeElevator()));
             }
         }
-
         floorList.forEach(f -> f.initQueues(elevatorList));
 
         elevatorList.forEach(el -> new Thread(() -> {
@@ -153,22 +157,27 @@ public class Main {
             }
 
         }).start());
-
+        restartTimer();
         working = true;
+    }
 
-        TimerTask task = new TimerTask() {
-                    @SneakyThrows
-                    public void run() {
-                        new Thread(() -> {
-                            Passenger passenger = PassengerFactory.createPassenger(floorList);
-                            passenger.invokeElevator();
-                        }).start();
-                        }
-            };
-        timer = new Timer();
+    private static void restartTimer() {
         long delay = 0L;
-        long period = 60L;
-        timer.scheduleAtFixedRate(task, delay,period);
+        long period = SpeedControl.getQueueSpeed().get();
+        TimerTask task = new TimerTask() {
+            public void run() {
+                new Thread(() -> {
+                    Passenger passenger = PassengerFactory.createPassenger(floorList);
+                    passenger.invokeElevator();
+                }).start();
+            }
+        };
+        if (working) {
+            timer.cancel();
+            timer = new Timer();
+        }
+        timer.scheduleAtFixedRate(task, delay, period);
+
     }
 
 

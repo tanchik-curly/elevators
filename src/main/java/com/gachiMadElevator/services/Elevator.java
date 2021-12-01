@@ -77,7 +77,8 @@ public class Elevator {
 
     public void processElevator() throws InterruptedException {
         while (true) {
-            sleep(SpeedControl.getQueueSpeed().get()); //elevators must make a decision about actions
+            //elevators must make a decision about actions
+            sleep(SpeedControl.getElevatorSpeed().get());
             removeLeavingUsers();
             takePassengers();
             findAndMoveToNextFloor();
