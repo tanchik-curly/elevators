@@ -1,35 +1,35 @@
 package com.gachiMadElevator.services;
 
 import com.gachiMadElevator.console_colors.ConsoleColors;
+import com.gachiMadElevator.helpers.StupidTuple;
 import lombok.extern.slf4j.Slf4j;
 
-import java.beans.PropertyChangeListener;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Queue;
 
 @Slf4j
-public class AccumulativeElevator extends Elevator {
-    public AccumulativeElevator(Floor floor, PropertyChangeListener listener) {
-        super(floor, listener);
-    }
+public class AccumulativeElevator implements FloorFindStrategy {
 
-    @Override
-    protected synchronized void findNextFloor() throws InterruptedException {
+    public synchronized StupidTuple findNextFloor(List<Passenger> activePassengers, Queue<Passenger> waitingPassengers,
+                                                  ElevatorStatus status, int id, Floor currentDestination,
+                                                  Floor currentFloor, ElevatorDirection direction) {
         if (activePassengers.isEmpty()) {
             if (waitingPassengers.isEmpty()) {
-                this.status = ElevatorStatus.FREE;
+                status = ElevatorStatus.FREE;
 
                 log.info(ConsoleColors.YELLOW + "No active or waiting passengers, elevator #" +
-                        this.id + " is chilling..." + ConsoleColors.RESET);
+                        id + " is chilling..." + ConsoleColors.RESET);
 
-                return;
+                return new StupidTuple(status, currentDestination, direction);
             }
 
-            this.currentDestination = waitingPassengers.poll().getInitialFloor();
+            currentDestination = waitingPassengers.poll().getInitialFloor();
 
-            if (currentDestination.getCurrent() >= this.currentFloor.getCurrent()) {
-                this.direction = ElevatorDirection.UP;
+            if (currentDestination.getCurrent() >= currentFloor.getCurrent()) {
+                direction = ElevatorDirection.UP;
             } else {
-                this.direction = ElevatorDirection.DOWN;
+                direction = ElevatorDirection.DOWN;
             }
         } else {
             int destinationFloorNumber = Integer.MAX_VALUE;
@@ -39,14 +39,14 @@ public class AccumulativeElevator extends Elevator {
                 destinationFloorNumber = activePassengers.stream()
                         .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
-                        .filter(x -> x > this.currentFloor.getCurrent())
+                        .filter(x -> x > currentFloor.getCurrent())
                         .min(Integer::compareTo)
                         .orElse(Integer.MAX_VALUE);
 
                 intermediateFloorNumber = waitingPassengers.stream()
                         .map(Passenger::getInitialFloor)
                         .map(Floor::getCurrent)
-                        .filter(x -> x > this.currentFloor.getCurrent())
+                        .filter(x -> x > currentFloor.getCurrent())
                         .min(Integer::compareTo)
                         .orElse(Integer.MAX_VALUE);
 
@@ -59,14 +59,14 @@ public class AccumulativeElevator extends Elevator {
                 destinationFloorNumber = activePassengers.stream()
                         .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
-                        .filter(x -> x < this.currentFloor.getCurrent())
+                        .filter(x -> x < currentFloor.getCurrent())
                         .max(Integer::compareTo)
                         .orElse(Integer.MAX_VALUE);
 
                 intermediateFloorNumber = waitingPassengers.stream()
                         .map(Passenger::getInitialFloor)
                         .map(Floor::getCurrent)
-                        .filter(x -> x < this.currentFloor.getCurrent())
+                        .filter(x -> x < currentFloor.getCurrent())
                         .max(Integer::compareTo)
                         .orElse(Integer.MAX_VALUE);
 
@@ -77,10 +77,10 @@ public class AccumulativeElevator extends Elevator {
                 destinationFloorNumber = activePassengers.stream()
                         .map(Passenger::getFinalFloor)
                         .map(Floor::getCurrent)
-                        .min(Comparator.comparingInt(x -> Math.abs(x - this.currentFloor.getCurrent())))
+                        .min(Comparator.comparingInt(x -> Math.abs(x - currentFloor.getCurrent())))
                         .get();
 
-                if (destinationFloorNumber >= this.currentFloor.getCurrent()) {
+                if (destinationFloorNumber >= currentFloor.getCurrent()) {
                     direction = ElevatorDirection.UP;
                 } else {
                     direction = ElevatorDirection.DOWN;
@@ -95,16 +95,16 @@ public class AccumulativeElevator extends Elevator {
                 currentPassenger = waitingPassengers.stream()
                         .filter(x -> x.getInitialFloor().getCurrent() == finalDestinationFloor)
                         .findFirst().get();
-                this.currentDestination = currentPassenger.getInitialFloor();
+                currentDestination = currentPassenger.getInitialFloor();
             } else {
-                this.currentDestination = currentPassenger.getFinalFloor();
+                currentDestination = currentPassenger.getFinalFloor();
             }
         }
 
-        log.info(ConsoleColors.YELLOW + "Elevator #" + this.id + " goes to floor " +
-                this.currentDestination.getCurrent() + ", direction: " + direction + ConsoleColors.RESET);
+        log.info(ConsoleColors.YELLOW + "Elevator #" + id + " goes to floor " +
+                currentDestination.getCurrent() + ", direction: " + direction + ConsoleColors.RESET);
 
-        moveToFloor(this.currentDestination);
+        return new StupidTuple(status, currentDestination, direction);
     }
 }
 

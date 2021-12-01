@@ -133,14 +133,13 @@ public class Main {
         String strategy = Objects.requireNonNull(form.getComboBoxStrategy().getSelectedItem()).toString();
 
         Elevator.setCounter(0);
-        if(strategy.equals("Direct")){
+        if (strategy.equals("Direct")){
             for (int i = 0; i < elevatorCount; ++i) {
-                elevatorList.add(new DirectElevator(floorList.get(0), observer));
+                elevatorList.add(new Elevator(floorList.get(0), observer, new DirectElevator()));
             }
-
         } else {
             for (int i = 0; i < elevatorCount; ++i) {
-                elevatorList.add(new AccumulativeElevator(floorList.get(0), observer));
+                elevatorList.add(new Elevator(floorList.get(0), observer, new AccumulativeElevator()));
             }
         }
 

@@ -21,22 +21,24 @@ import static java.lang.Thread.sleep;
 @Getter
 @Setter
 @Slf4j
-public abstract class Elevator {
+public class Elevator {
     public static final int MAX_USERS_COUNT = 30;
     public static final int MAX_ACCEPTABLE_WEIGHT = 1000;
     @Setter
     private static int counter = 0;
-    protected int id;
-    protected ElevatorStatus status;
-    protected ElevatorDirection direction;
-    protected Floor currentFloor;
-    protected Floor currentDestination;
-    protected List<Passenger> activePassengers;
-    protected Queue<Passenger> waitingPassengers;
+    public int id;
+    private ElevatorStatus status;
+    private ElevatorDirection direction;
+    private Floor currentFloor;
+    private Floor currentDestination;
+    private List<Passenger> activePassengers;
+    private Queue<Passenger> waitingPassengers;
 
     private PropertyChangeSupport support;
 
-    public Elevator(Floor floor, PropertyChangeListener listener) {
+    private FloorFindStrategy floorFindStrategy;
+
+    public Elevator(Floor floor, PropertyChangeListener listener, FloorFindStrategy strategy) {
         this.currentFloor = floor;
         id = counter++;
         status = ElevatorStatus.FREE;
@@ -45,6 +47,8 @@ public abstract class Elevator {
 
         support = new PropertyChangeSupport(this);
         support.addPropertyChangeListener(listener);
+
+        this.floorFindStrategy = strategy;
     }
 
     public synchronized int getActiveUsersCount() {
@@ -76,11 +80,11 @@ public abstract class Elevator {
             sleep(SpeedControl.getQueueSpeed().get()); //elevators must make a decision about actions
             removeLeavingUsers();
             takePassengers();
-            findNextFloor();
+            findAndMoveToNextFloor();
         }
     }
 
-    protected synchronized void removeLeavingUsers() {
+    private synchronized void removeLeavingUsers() {
         if (activePassengers.removeIf(x -> x.getFinalFloor() == currentFloor)) {
             log.info(ConsoleColors.GREEN + "Passengers left elevator #" + this.getId() + ConsoleColors.RESET);
         } else {
@@ -88,7 +92,7 @@ public abstract class Elevator {
         }
     }
 
-    protected synchronized void takePassengers() {
+    private synchronized void takePassengers() {
         if (currentFloor == null)
             return;
 
@@ -117,6 +121,9 @@ public abstract class Elevator {
     }
 
     public synchronized void moveToFloor(Floor floor) throws InterruptedException {
+        if (currentDestination == null)
+            return;
+
         int currentElevatorFloor = currentFloor.getCurrent();
 
         while (currentElevatorFloor != currentDestination.getCurrent()) {
@@ -146,6 +153,15 @@ public abstract class Elevator {
         }
     }
 
-    protected abstract void findNextFloor() throws InterruptedException;
+    private void findAndMoveToNextFloor() throws InterruptedException {
+        var result = floorFindStrategy.findNextFloor(
+                activePassengers, waitingPassengers, status, id, currentDestination, currentFloor, direction);
+
+        this.status = result.status;
+        this.currentDestination = result.currentDestination;
+        this.direction = result.direction;
+
+        moveToFloor(currentDestination);
+    }
 }
 
