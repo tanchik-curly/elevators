@@ -14,7 +14,8 @@ public class MainForm {
     private JComboBox<String> comboBoxStrategy;
     private JButton startButton;
     private JButton resetButton;
-    private JSlider speedSlider;
+    private JSlider elevatorSpeedSlider;
+    private JSlider queueSpeedSlider;
 
     public JPanel getRootPanel() {
         return this.panel1;

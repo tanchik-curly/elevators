@@ -36,7 +36,7 @@ public abstract class Elevator {
 
     private PropertyChangeSupport support;
 
-    public Elevator(Floor floor, PropertyChangeListener listener) {
+    protected Elevator(Floor floor, PropertyChangeListener listener) {
         this.currentFloor = floor;
         id = counter++;
         status = ElevatorStatus.FREE;
@@ -73,7 +73,8 @@ public abstract class Elevator {
 
     public void processElevator() throws InterruptedException {
         while (true) {
-            sleep(SpeedControl.getQueueSpeed().get()); //elevators must make a decision about actions
+            //elevators must make a decision about actions
+            sleep(SpeedControl.getElevatorSpeed().get());
             removeLeavingUsers();
             takePassengers();
             findNextFloor();
