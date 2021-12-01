@@ -9,9 +9,8 @@ public class SpeedControl {
     private SpeedControl() {}
 
     public static void update(int sliderValue) {
-        int difference = 30;
         queueSpeed.set(sliderValue);
-        elevatorSpeed.set(sliderValue - difference);
+        elevatorSpeed.set(sliderValue);
     }
 
     public static AtomicInteger getQueueSpeed() {

@@ -11,7 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class Observer implements PropertyChangeListener {
-    public JTable table;
+    public final JTable table;
 
     public Observer(JTable table) {
         this.table = table;
@@ -21,28 +21,29 @@ public class Observer implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent event) {
         if(event.getPropertyName().equals(ObservableProperties.FLOOR_CHANGED.toString())) {
             updateElevator((ElevatorViewModel) event.getNewValue());
-        }
-        else if(event.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
+        } else if(event.getPropertyName().equals(ObservableProperties.QUEUE_CHANGED.toString())) {
             updateQueue((PassengerQueueViewModel) event.getNewValue());
         }
         table.repaint();
     }
+
     private void updateElevator(ElevatorViewModel elevator) {
         ElevatorStatus status = ElevatorStatus.FREE;
-        if(elevator.getCurrentActiveUserAmount() == elevator.getMaxActiveUserAmount() ||
-                elevator.getMaxCapacity() - elevator.getCurrentCapacity() <= 10) {
+        int currentElevatorEnjoyers = elevator.getCurrentActiveUserAmount();
+        if(currentElevatorEnjoyers == elevator.getMaxActiveUserAmount() ||
+                        elevator.getMaxCapacity() - elevator.getCurrentCapacity() <= 10) {
             status = ElevatorStatus.FULL;
-        }
-        else if(elevator.getCurrentActiveUserAmount() > 0) {
+        } else if(currentElevatorEnjoyers > 0) {
             status = ElevatorStatus.WORK;
         }
-        ChangeCellColor(table.getColumnModel(), elevator.getNumber(), elevator.getCurrentFloor(), status);
+        changeCellColor(table.getColumnModel(), elevator.getNumber(), elevator.getCurrentFloor(), status);
 
         for(int i = 0; i < Main.getFloorCount(); i++) {
             table.setValueAt("", i,elevator.getNumber() * 2);
 
             if(i == Main.getFloorCount() - elevator.getCurrentFloor()) {
-                table.setValueAt(elevator.getCurrentActiveUserAmount(), i - 1, elevator.getNumber() * 2);
+                table.setValueAt(currentElevatorEnjoyers + String.format(" (%d)", elevator.getCurrentCapacity()),
+                        i - 1, elevator.getNumber() * 2);
             }
         }
     }
@@ -51,7 +52,7 @@ public class Observer implements PropertyChangeListener {
         String waitingPeople = "\ud83d\udc64".repeat(Math.max(0, newQueue.getUsersInQueue())) +
                 " " + newQueue.getUsersInQueue();
         var queueRenderer = new QueueCellRenderer();
-        queueRenderer.setHorizontalAlignment(JLabel.RIGHT);
+        queueRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         table.getColumnModel().getColumn(newQueue.getElevatorNumber() * 2 - 1).setCellRenderer(queueRenderer);
 
         table.setValueAt(waitingPeople,
@@ -59,10 +60,10 @@ public class Observer implements PropertyChangeListener {
                 newQueue.getElevatorNumber() * 2 - 1);
     }
 
-    public static void ChangeCellColor(TableColumnModel model, int elevatorIndex, int floorNum, ElevatorStatus status)
+    public static void changeCellColor(TableColumnModel model, int elevatorIndex, int floorNum, ElevatorStatus status)
     {
         var elevatorRenderer = new ElevatorRenderer(Main.getFloorCount() - floorNum - 1, status);
-        elevatorRenderer.setHorizontalAlignment(JLabel.CENTER);
+        elevatorRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         model.getColumn(elevatorIndex * 2).setCellRenderer(elevatorRenderer);
     }
 }
