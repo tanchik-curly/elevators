@@ -2,6 +2,9 @@ package com.gachiMadElevator.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import lombok.*;
 
 @Getter
@@ -16,6 +19,7 @@ public class MainForm {
     private JButton resetButton;
     private JSlider elevatorSpeedSlider;
     private JSlider queueSpeedSlider;
+    private JButton pauseButton;
 
     public JPanel getRootPanel() {
         return this.panel1;

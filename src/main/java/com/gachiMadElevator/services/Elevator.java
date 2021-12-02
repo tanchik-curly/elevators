@@ -76,13 +76,11 @@ public class Elevator {
     }
 
     public void processElevator() throws InterruptedException {
-        while (true) {
-            //elevators must make a decision about actions
-            sleep(SpeedControl.getElevatorSpeed().get());
-            removeLeavingUsers();
-            takePassengers();
-            findAndMoveToNextFloor();
-        }
+        //elevators must make a decision about actions
+        sleep(SpeedControl.getElevatorSpeed().get());
+        removeLeavingUsers();
+        takePassengers();
+        findAndMoveToNextFloor();
     }
 
     private synchronized void removeLeavingUsers() {

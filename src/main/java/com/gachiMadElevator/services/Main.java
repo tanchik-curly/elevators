@@ -1,10 +1,12 @@
 package com.gachiMadElevator.services;
 
 import com.gachiMadElevator.helpers.Observer;
+import com.gachiMadElevator.utils.CustomThread;
 import com.gachiMadElevator.utils.PassengerFactory;
 import com.gachiMadElevator.utils.SpeedControl;
 import com.gachiMadElevator.view.FloorRenderer;
 import com.gachiMadElevator.view.MainForm;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,14 +16,17 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
+@Slf4j
 public class Main {
 
     private static int floorCount;
     private static int elevatorCount;
     private static Observer observer;
-    private static Timer timer = new Timer();
+    private static Timer timer;
     private static boolean working;
+    private static boolean suspending;
     private static List<Floor> floorList;
+    private static List<CustomThread> threadList;
 
 
     public static void main(String[] args) {
@@ -35,6 +40,7 @@ public class Main {
         var form  = new MainForm();
         form.getStartButton().addActionListener(e -> executeAlgorithm(form));
         form.getResetButton().addActionListener(e -> stopAlgorithm(form));
+        form.getPauseButton().addActionListener(e -> pauseAlgorithm());
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
@@ -105,11 +111,34 @@ public class Main {
     private static void stopAlgorithm(MainForm form){
         if (working) {
             timer.cancel();
-            Set<Thread> threads = Thread.getAllStackTraces().keySet();
-            threads.forEach(Thread::interrupt);
+            threadList.forEach(Thread::interrupt);
+            threadList.clear();
             clearTable(form);
             working = false;
+            suspending = false;
         }
+    }
+
+    private static void pauseAlgorithm() {
+        if (!working) {
+            JOptionPane.showMessageDialog(null, "Can't suspend/resume elevators if they are not started ;)");
+            return;
+        }
+
+        if (suspending) {
+            restartTimer();
+            for (var th: threadList) {
+                th.resumeThread();
+            }
+            suspending = false;
+        } else {
+            timer.cancel();
+            for (var th: threadList) {
+                th.suspendThread();
+            }
+            suspending = true;
+        }
+
     }
 
     private static void executeAlgorithm(MainForm form) {
@@ -149,14 +178,19 @@ public class Main {
         }
         floorList.forEach(f -> f.initQueues(elevatorList));
 
-        elevatorList.forEach(el -> new Thread(() -> {
-            try {
-                el.processElevator();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }).start());
+        threadList = new LinkedList<>();
+        for (var el: elevatorList) {
+            CustomThread th = new CustomThread(() -> {
+                try {
+                    el.processElevator();
+                } catch (InterruptedException e) {
+                    log.info("Thread was successfully reset");
+                    Thread.currentThread().interrupt();
+                }
+            });
+            threadList.add(th);
+            th.start();
+        }
         restartTimer();
         working = true;
     }
@@ -172,12 +206,11 @@ public class Main {
                 }).start();
             }
         };
-        if (working) {
+        if (working && !suspending) {
             timer.cancel();
-            timer = new Timer();
         }
+        timer = new Timer();
         timer.scheduleAtFixedRate(task, delay, period);
-
     }
 
 
