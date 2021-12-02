@@ -29,15 +29,15 @@ public class PassengerFactory {
         var passenger = new Passenger(
                 passengerNames.get(
                         random.nextInt(passengerNames.size())),
-                        random.nextInt(200),
+                        random.ints(20, 100).findFirst().getAsInt(),
                         floors.get(initialIdx),
                         floors.get(finalIdx));
 
 
-        floors.get(initialIdx).addUserToQueue(passenger);
+        floors.get(initialIdx).addPassengerToQueue(passenger);
         log.info(
                     ConsoleColors.CYAN +
-                    "New user: " +
+                    "New pasenger: " +
                     passenger.getPassengerName() +
                     ", ID: " +
                     passenger.getPassengerId() +

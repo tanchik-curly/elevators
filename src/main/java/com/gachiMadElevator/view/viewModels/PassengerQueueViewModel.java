@@ -6,5 +6,5 @@ import lombok.*;
 public class PassengerQueueViewModel {
     private int currentFloor;
     private int elevatorNumber;
-    private int usersInQueue;
+    private int passengersInQueue;
 }

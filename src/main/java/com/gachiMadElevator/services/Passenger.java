@@ -33,7 +33,7 @@ public class Passenger {
 
 
     public synchronized boolean grantPassengerAccess(Elevator currElevator) {
-        return currElevator.getActiveUsersCount() + 1 <= Elevator.MAX_USERS_COUNT && currElevator.getCurrentWeight() + getPassengerWeight() <= Elevator.MAX_ACCEPTABLE_WEIGHT;
+        return currElevator.getActivePassengersCount() + 1 <= Elevator.MAX_PASSENGERS_COUNT && currElevator.getCurrentWeight() + getPassengerWeight() <= Elevator.MAX_ACCEPTABLE_WEIGHT;
     }
 
     public synchronized void invokeElevator() {
