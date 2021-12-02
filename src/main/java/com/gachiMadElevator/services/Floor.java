@@ -43,7 +43,7 @@ public class Floor {
         }
     }
 
-    public synchronized void addUserToQueue(Passenger passenger) {
+    public synchronized void addPassengerToQueue(Passenger passenger) {
         var shortestPassengerQueue = passengerElevatorQueue
                 .values()
                 .stream()

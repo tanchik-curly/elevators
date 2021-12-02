@@ -5,9 +5,9 @@ import lombok.*;
 @Getter
 public class ElevatorViewModel {
     private int number;
-    private int currentActiveUserAmount;
+    private int currentActivePassengerAmount;
     private int currentCapacity;
-    private int maxActiveUserAmount;
+    private int maxActivePassengerAmount;
     private int maxCapacity;
     private int currentFloor;
 }

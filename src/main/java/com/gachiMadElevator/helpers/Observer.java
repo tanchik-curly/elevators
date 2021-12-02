@@ -29,8 +29,8 @@ public class Observer implements PropertyChangeListener {
 
     private void updateElevator(ElevatorViewModel elevator) {
         ElevatorStatus status = ElevatorStatus.FREE;
-        int currentElevatorEnjoyers = elevator.getCurrentActiveUserAmount();
-        if(currentElevatorEnjoyers == elevator.getMaxActiveUserAmount() ||
+        int currentElevatorEnjoyers = elevator.getCurrentActivePassengerAmount();
+        if(currentElevatorEnjoyers == elevator.getMaxActivePassengerAmount() ||
                         elevator.getMaxCapacity() - elevator.getCurrentCapacity() <= 10) {
             status = ElevatorStatus.FULL;
         } else if(currentElevatorEnjoyers > 0) {
@@ -49,8 +49,8 @@ public class Observer implements PropertyChangeListener {
     }
 
     private void updateQueue(PassengerQueueViewModel newQueue) {
-        String waitingPeople = "\ud83d\udc64".repeat(Math.max(0, newQueue.getUsersInQueue())) +
-                " " + newQueue.getUsersInQueue();
+        String waitingPeople = "\ud83d\udc64".repeat(Math.max(0, newQueue.getPassengersInQueue())) +
+                " " + newQueue.getPassengersInQueue();
         var queueRenderer = new QueueCellRenderer();
         queueRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         table.getColumnModel().getColumn(newQueue.getElevatorNumber() * 2 - 1).setCellRenderer(queueRenderer);

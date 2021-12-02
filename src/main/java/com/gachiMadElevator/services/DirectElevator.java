@@ -17,7 +17,7 @@ public class DirectElevator implements FloorFindStrategy {
         if (activePassengers.isEmpty()) {
             if (waitingPassengers.isEmpty()) {
                 status = ElevatorStatus.FREE;
-                log.info(ConsoleColors.PURPLE +"There are no waiting users, elevator is free!"+ ConsoleColors.RESET);
+                log.info(ConsoleColors.PURPLE +"There are no waiting passengers, elevator is free!"+ ConsoleColors.RESET);
                 return new StupidTuple(status, currentDestination, direction);
             } else {
                 currentDestination = waitingPassengers.poll().getInitialFloor(); //get first passenger in queue

@@ -22,7 +22,7 @@ import static java.lang.Thread.sleep;
 @Setter
 @Slf4j
 public class Elevator {
-    public static final int MAX_USERS_COUNT = 30;
+    public static final int MAX_PASSENGERS_COUNT = 30;
     public static final int MAX_ACCEPTABLE_WEIGHT = 1000;
     @Setter
     private static int counter = 0;
@@ -51,7 +51,7 @@ public class Elevator {
         this.floorFindStrategy = strategy;
     }
 
-    public synchronized int getActiveUsersCount() {
+    public synchronized int getActivePassengersCount() {
         return activePassengers.size();
     }
 
@@ -78,12 +78,12 @@ public class Elevator {
     public void processElevator() throws InterruptedException {
         //elevators must make a decision about actions
         sleep(SpeedControl.getElevatorSpeed().get());
-        removeLeavingUsers();
+        removeLeavingPassengers();
         takePassengers();
         findAndMoveToNextFloor();
     }
 
-    private synchronized void removeLeavingUsers() {
+    private synchronized void removeLeavingPassengers() {
         if (activePassengers.removeIf(x -> x.getFinalFloor() == currentFloor)) {
             log.info(ConsoleColors.GREEN + "Passengers left elevator #" + this.getId() + ConsoleColors.RESET);
         } else {
@@ -106,10 +106,10 @@ public class Elevator {
                     log.info(ConsoleColors.BLUE + "Passenger #" + passenger.getPassengerId() + " " + passenger.getPassengerName() + " entered elevator #"
                             + this.getId() + ConsoleColors.RESET);
 
-                    var userQueueViewModel = new PassengerQueueViewModel(currentFloor.getCurrent(),
+                    var passengerQueueViewModel = new PassengerQueueViewModel(currentFloor.getCurrent(),
                             id + 1,
                             currentFloor.getPassengerElevatorQueue().get(this).size());
-                    support.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, userQueueViewModel);
+                    support.firePropertyChange(ObservableProperties.QUEUE_CHANGED.toString(), null, passengerQueueViewModel);
                 } else {
                     break;
                 }
@@ -130,7 +130,7 @@ public class Elevator {
                     id + 1,
                     activePassengers.size(),
                     getCurrentWeight(),
-                    Elevator.MAX_USERS_COUNT,
+                    Elevator.MAX_PASSENGERS_COUNT,
                     Elevator.MAX_ACCEPTABLE_WEIGHT,
                     currentElevatorFloor);
 

@@ -34,10 +34,10 @@ public class PassengerFactory {
                         floors.get(finalIdx));
 
 
-        floors.get(initialIdx).addUserToQueue(passenger);
+        floors.get(initialIdx).addPassengerToQueue(passenger);
         log.info(
                     ConsoleColors.CYAN +
-                    "New user: " +
+                    "New pasenger: " +
                     passenger.getPassengerName() +
                     ", ID: " +
                     passenger.getPassengerId() +
