@@ -1,6 +1,8 @@
 package com.gachiMadElevator.services;
 
 import com.gachiMadElevator.console_colors.ConsoleColors;
+import com.gachiMadElevator.helpers.StupidTuple;
+import com.gachiMadElevator.utils.LockObj;
 import com.gachiMadElevator.utils.SpeedControl;
 import com.gachiMadElevator.view.viewModels.ElevatorViewModel;
 import com.gachiMadElevator.view.ObservableProperties;
@@ -59,19 +61,21 @@ public class Elevator {
         return activePassengers.stream().map(Passenger::getPassengerWeight).reduce(0, Integer::sum);
     }
 
-    public synchronized void invokeElevator(Passenger passenger) {
-        if (status == ElevatorStatus.BUSY) {
-            waitingPassengers.add(passenger);
-
-            log.info(ConsoleColors.RED + "Passenger #" + passenger.getPassengerId() + " " + passenger.getPassengerName() + " wait on elevator #"
-                    + this.getId() + ", number of waiting people: " + waitingPassengers.size() + ConsoleColors.RESET);
-        } else if (status == ElevatorStatus.FREE) {
-            if (passenger.getInitialFloor() != currentFloor) {
+    public void invokeElevator(Passenger passenger) {
+        synchronized (LockObj.class) {
+            if (status == ElevatorStatus.BUSY) {
                 waitingPassengers.add(passenger);
-                log.info(ConsoleColors.YELLOW + "Elevator #" + this.getId() + " goes to " + "passenger "
-                        + passenger.getPassengerName() + ConsoleColors.RESET);
+
+                log.info(ConsoleColors.RED + "Passenger #" + passenger.getPassengerId() + " " + passenger.getPassengerName() + " wait on elevator #"
+                        + this.getId() + ", number of waiting people: " + waitingPassengers.size() + ConsoleColors.RESET);
+            } else if (status == ElevatorStatus.FREE) {
+                if (passenger.getInitialFloor() != currentFloor) {
+                    waitingPassengers.add(passenger);
+                    log.info(ConsoleColors.YELLOW + "Elevator #" + this.getId() + " goes to " + "passenger "
+                            + passenger.getPassengerName() + ConsoleColors.RESET);
+                }
+                status = ElevatorStatus.BUSY;
             }
-            status = ElevatorStatus.BUSY;
         }
     }
 
@@ -153,8 +157,11 @@ public class Elevator {
     }
 
     private void findAndMoveToNextFloor() throws InterruptedException {
-        var result = floorFindStrategy.findNextFloor(
-                activePassengers, waitingPassengers, status, id, currentDestination, currentFloor, direction);
+        StupidTuple result;
+        synchronized (LockObj.class) {
+            result = floorFindStrategy.findNextFloor(
+                    activePassengers, waitingPassengers, status, id, currentDestination, currentFloor, direction);
+        }
 
         this.status = result.status;
         this.currentDestination = result.currentDestination;
